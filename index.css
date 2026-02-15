@@ -9,19 +9,19 @@
    ============================================================ */
 :root {
   /* Colors */
-  --color-bg: #F7F6F3;
+  --color-bg: #f7f6f3;
   --color-text: #111111;
-  --color-accent: #8B0000;
-  --color-accent-hover: #6E0000;
+  --color-accent: #8b0000;
+  --color-accent-hover: #6e0000;
   --color-accent-active: #560000;
-  --color-success: #4A7C59;
-  --color-warning: #B8860B;
+  --color-success: #4a7c59;
+  --color-warning: #b8860b;
 
   /* Neutral palette */
-  --color-border: #D5D3CE;
-  --color-muted: #6B6B6B;
-  --color-surface: #FFFFFF;
-  --color-hover-bg: #EEEDEA;
+  --color-border: #d5d3ce;
+  --color-muted: #6b6b6b;
+  --color-surface: #ffffff;
+  --color-hover-bg: #eeedea;
 
   /* Spacing */
   --space-xs: 8px;
@@ -32,8 +32,9 @@
   --space-2xl: 96px;
 
   /* Typography */
-  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-heading: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
   --text-xs: 13px;
   --text-sm: 14px;
@@ -64,7 +65,6 @@
   --transition-normal: 200ms ease-in-out;
   --transition-slow: 400ms ease-out;
 }
-
 
 /* ============================================================
    2. RESET & BASE
@@ -109,7 +109,6 @@ a {
 a:hover {
   text-decoration: underline;
 }
-
 
 /* ============================================================
    3. TYPOGRAPHY
@@ -168,7 +167,6 @@ p {
   max-width: var(--max-prose);
 }
 
-
 /* ============================================================
    4. LAYOUT SHELL
    ============================================================ */
@@ -177,7 +175,6 @@ p {
   grid-template-rows: auto 1fr;
   min-height: 100vh;
 }
-
 
 /* —— TOP BAR —— */
 .top-bar {
@@ -206,7 +203,6 @@ p {
   color: var(--color-accent);
   text-decoration: none;
 }
-
 
 /* ============================================================
    5. NAVIGATION
@@ -240,7 +236,7 @@ p {
 }
 
 .nav-link::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -1px;
   left: 0;
@@ -262,7 +258,6 @@ p {
   transform: scaleX(1);
 }
 
-
 /* —— HAMBURGER —— */
 .hamburger-btn {
   display: none;
@@ -277,7 +272,9 @@ p {
   color: var(--color-text);
   font-size: 20px;
   line-height: 1;
-  transition: border-color var(--transition-fast), background var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast);
   flex-shrink: 0;
 }
 
@@ -290,7 +287,6 @@ p {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
-
 
 /* ============================================================
    6. ROUTE PAGES — Base
@@ -323,7 +319,6 @@ p {
   }
 }
 
-
 /* —— Page Shell (inner wrapper) —— */
 .page-shell {
   width: 100%;
@@ -354,7 +349,6 @@ p {
   justify-content: space-between;
   gap: var(--space-sm);
 }
-
 
 /* ============================================================
    7. LANDING / HERO
@@ -433,7 +427,6 @@ p {
   opacity: 0.7;
 }
 
-
 /* ============================================================
    8. EMPTY STATES
    ============================================================ */
@@ -467,7 +460,6 @@ p {
   line-height: var(--leading-normal);
   max-width: 400px;
 }
-
 
 /* ============================================================
    9. FILTER BAR
@@ -508,7 +500,9 @@ p {
   border-radius: var(--radius);
   background: var(--color-bg);
   color: var(--color-text);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .filter-bar__input::placeholder {
@@ -553,7 +547,6 @@ p {
   margin-bottom: var(--space-sm);
 }
 
-
 /* ============================================================
    10. JOB CARDS
    ============================================================ */
@@ -571,11 +564,13 @@ p {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .job-card:hover {
-  border-color: #B0AEA8;
+  border-color: #b0aea8;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
 }
 
@@ -620,18 +615,18 @@ p {
 }
 
 .source-badge--linkedin {
-  background: #E8F0FE;
-  color: #0A66C2;
+  background: #e8f0fe;
+  color: #0a66c2;
 }
 
 .source-badge--naukri {
-  background: #E8F5E9;
-  color: #1B5E20;
+  background: #e8f5e9;
+  color: #1b5e20;
 }
 
 .source-badge--indeed {
-  background: #FFF3E0;
-  color: #BF360C;
+  background: #fff3e0;
+  color: #bf360c;
 }
 
 /* Card meta */
@@ -690,6 +685,101 @@ p {
   border-color: var(--color-accent);
 }
 
+/* Status badge and buttons */
+.job-card__status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.status-badge--neutral {
+  background: #e0e0e0;
+  color: #424242;
+}
+
+.status-badge--blue {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-badge--red {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.status-badge--green {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+}
+
+.btn-status {
+  flex: 1;
+  min-width: 100px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-muted);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-status:hover {
+  border-color: #999;
+  color: var(--color-text);
+}
+
+.btn-status.is-active {
+  font-weight: 700;
+  border-width: 2px;
+}
+
+.btn-status--neutral.is-active {
+  background: #e0e0e0;
+  color: #424242;
+  border-color: #757575;
+}
+
+.btn-status--blue.is-active {
+  background: #e3f2fd;
+  color: #1565c0;
+  border-color: #1565c0;
+}
+
+.btn-status--red.is-active {
+  background: #ffebee;
+  color: #c62828;
+  border-color: #c62828;
+}
+
+.btn-status--green.is-active {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-color: #2e7d32;
+}
 
 /* ============================================================
    11. JOB DETAIL MODAL
@@ -705,7 +795,9 @@ p {
   z-index: 1000;
   opacity: 0;
   visibility: hidden;
-  transition: opacity var(--transition-normal), visibility var(--transition-normal);
+  transition:
+    opacity var(--transition-normal),
+    visibility var(--transition-normal);
   padding: var(--space-md);
 }
 
@@ -818,7 +910,6 @@ p {
   flex: 1;
 }
 
-
 /* ============================================================
    12. SETTINGS FORM
    ============================================================ */
@@ -837,7 +928,7 @@ p {
 }
 
 .form-section:hover {
-  border-color: #B0AEA8;
+  border-color: #b0aea8;
 }
 
 .input-hint {
@@ -890,12 +981,12 @@ p {
   transition: all var(--transition-fast);
 }
 
-.radio-label input[type="radio"]:checked~.radio-custom {
+.radio-label input[type="radio"]:checked ~ .radio-custom {
   border-color: var(--color-accent);
 }
 
-.radio-label input[type="radio"]:checked~.radio-custom::after {
-  content: '';
+.radio-label input[type="radio"]:checked ~ .radio-custom::after {
+  content: "";
   position: absolute;
   top: 3px;
   left: 3px;
@@ -936,7 +1027,6 @@ p {
   opacity: 0.7;
 }
 
-
 /* ============================================================
    13. PROOF GRID
    ============================================================ */
@@ -951,11 +1041,13 @@ p {
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
   padding: var(--space-md);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .proof-card:hover {
-  border-color: #B0AEA8;
+  border-color: #b0aea8;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
@@ -968,7 +1060,6 @@ p {
 .proof-card h4 {
   margin-bottom: 4px;
 }
-
 
 /* ============================================================
    14. BUTTONS
@@ -998,7 +1089,7 @@ p {
 
 .btn-primary {
   background: var(--color-accent);
-  color: #FFFFFF;
+  color: #ffffff;
   border-color: var(--color-accent);
 }
 
@@ -1047,7 +1138,6 @@ p {
   pointer-events: none;
 }
 
-
 /* ============================================================
    15. INPUTS
    ============================================================ */
@@ -1061,7 +1151,9 @@ p {
   background: var(--color-surface);
   color: var(--color-text);
   width: 100%;
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
 }
 
 .input::placeholder {
@@ -1076,7 +1168,7 @@ p {
 }
 
 .input:hover:not(:focus) {
-  border-color: #A0A0A0;
+  border-color: #a0a0a0;
 }
 
 .input-group {
@@ -1096,7 +1188,6 @@ textarea.input {
   resize: vertical;
   min-height: 80px;
 }
-
 
 /* ============================================================
    16. CARDS & BADGES
@@ -1126,7 +1217,6 @@ textarea.input {
   margin: var(--space-md) 0;
 }
 
-
 /* ============================================================
    17. 404 PAGE
    ============================================================ */
@@ -1150,7 +1240,6 @@ textarea.input {
   margin-bottom: var(--space-xs);
 }
 
-
 /* ============================================================
    18. TOAST
    ============================================================ */
@@ -1166,7 +1255,9 @@ textarea.input {
   border-radius: var(--radius);
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity var(--transition-normal), transform var(--transition-normal);
+  transition:
+    opacity var(--transition-normal),
+    transform var(--transition-normal);
   pointer-events: none;
   z-index: 1000;
 }
@@ -1176,12 +1267,10 @@ textarea.input {
   transform: translateY(0);
 }
 
-
 /* ============================================================
    19. RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
-
   .hamburger-btn {
     display: flex;
   }
@@ -1314,7 +1403,6 @@ textarea.input {
   }
 }
 
-
 /* ============================================================
    20. SCORE BADGES
    ============================================================ */
@@ -1334,29 +1422,28 @@ textarea.input {
 }
 
 .score-badge--green {
-  background: #E8F5E9;
-  color: #2E7D32;
-  border: 1px solid #C8E6C9;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
 }
 
 .score-badge--amber {
-  background: #FFF8E1;
-  color: #F57F17;
-  border: 1px solid #FFECB3;
+  background: #fff8e1;
+  color: #f57f17;
+  border: 1px solid #ffecb3;
 }
 
 .score-badge--neutral {
-  background: #F5F5F5;
+  background: #f5f5f5;
   color: #616161;
-  border: 1px solid #E0E0E0;
+  border: 1px solid #e0e0e0;
 }
 
 .score-badge--grey {
-  background: #FAFAFA;
-  color: #9E9E9E;
-  border: 1px solid #EEEEEE;
+  background: #fafafa;
+  color: #9e9e9e;
+  border: 1px solid #eeeeee;
 }
-
 
 /* ============================================================
    21. MATCH TOGGLE
@@ -1398,11 +1485,14 @@ textarea.input {
   transition: transform var(--transition-fast);
 }
 
-.match-toggle input[type="checkbox"]:checked~.match-toggle__track {
+.match-toggle input[type="checkbox"]:checked ~ .match-toggle__track {
   background: var(--color-accent);
 }
 
-.match-toggle input[type="checkbox"]:checked~.match-toggle__track .match-toggle__thumb {
+.match-toggle
+  input[type="checkbox"]:checked
+  ~ .match-toggle__track
+  .match-toggle__thumb {
   transform: translateX(18px);
 }
 
@@ -1413,7 +1503,6 @@ textarea.input {
   white-space: nowrap;
 }
 
-
 /* ============================================================
    22. PREFERENCES BANNER
    ============================================================ */
@@ -1422,18 +1511,18 @@ textarea.input {
   align-items: center;
   gap: var(--space-xs);
   padding: 12px var(--space-sm);
-  background: #FFF8E1;
-  border: 1px solid #FFECB3;
+  background: #fff8e1;
+  border: 1px solid #ffecb3;
   border-radius: var(--radius);
   margin-bottom: var(--space-sm);
   font-family: var(--font-body);
   font-size: var(--text-sm);
-  color: #6D4C00;
+  color: #6d4c00;
 }
 
 .prefs-banner svg {
   flex-shrink: 0;
-  color: #F57F17;
+  color: #f57f17;
 }
 
 .prefs-banner a {
@@ -1441,7 +1530,6 @@ textarea.input {
   font-weight: 600;
   text-decoration: underline;
 }
-
 
 /* ============================================================
    23. RANGE SLIDER
@@ -1498,7 +1586,6 @@ textarea.input {
   text-align: center;
 }
 
-
 /* ============================================================
    24. CHECKBOX GROUP (pill-style)
    ============================================================ */
@@ -1545,13 +1632,13 @@ textarea.input {
   transition: all var(--transition-fast);
 }
 
-.checkbox-label input[type="checkbox"]:checked~.checkbox-custom {
+.checkbox-label input[type="checkbox"]:checked ~ .checkbox-custom {
   background: var(--color-accent);
   border-color: var(--color-accent);
 }
 
-.checkbox-label input[type="checkbox"]:checked~.checkbox-custom::after {
-  content: '';
+.checkbox-label input[type="checkbox"]:checked ~ .checkbox-custom::after {
+  content: "";
   position: absolute;
   top: 2px;
   left: 5px;
@@ -1568,7 +1655,6 @@ textarea.input {
   color: var(--color-accent);
   font-weight: 500;
 }
-
 
 /* ============================================================
    25. DIGEST — Email-Style Layout
@@ -1596,7 +1682,9 @@ textarea.input {
 .digest-card {
   background: white;
   border-radius: var(--radius-lg);
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 2px 16px rgba(0, 0, 0, 0.06),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
   overflow: hidden;
   margin-top: var(--space-sm);
 }
@@ -1683,6 +1771,49 @@ textarea.input {
   flex-shrink: 0;
 }
 
+/* Status Update Rows */
+.status-update-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-sm);
+  padding: 12px var(--space-sm);
+  background: var(--color-bg);
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  transition: all var(--transition-fast);
+}
+
+.status-update-row:hover {
+  background: var(--color-surface);
+  border-color: #b0aea8;
+}
+
+.status-update-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.status-update-row__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-update-row__meta {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .digest-card__footer {
   padding: var(--space-sm) var(--space-md);
   background: var(--color-bg-alt);
@@ -1706,7 +1837,7 @@ textarea.input {
 }
 
 /* Digest page background */
-[data-route-page="digest"]>.page-shell {
+[data-route-page="digest"] > .page-shell {
   background: var(--color-bg-alt);
   border-radius: var(--radius-lg);
   padding: var(--space-md);
