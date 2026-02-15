@@ -94,6 +94,7 @@
   var STATUS_KEY = "jobTrackerStatus";
   var STATUS_UPDATES_KEY = "jobTrackerStatusUpdates";
   var TEST_KEY = "jobTrackerTestChecklist";
+  var PROOF_KEY = "jobTrackerProof";
 
   // Status constants
   var JOB_STATUSES = ["Not Applied", "Applied", "Rejected", "Selected"];
@@ -151,7 +152,9 @@
     if (route === "digest") renderDigestPage();
     if (route === "settings") prefillSettingsForm();
     if (route === "test") renderTestPage();
+    if (route === "test") renderTestPage();
     if (route === "ship") renderShipPage();
+    if (route === "proof") renderProofPage();
   }
 
   function handleHashChange() {
@@ -1736,6 +1739,133 @@
       if (lockScreen) lockScreen.style.display = "flex";
       if (successScreen) successScreen.style.display = "none";
     }
+  }
+
+  // ============================================================
+  //  PROOF PAGE
+  // ============================================================
+
+  function getProofState() {
+    try {
+      var json = localStorage.getItem(PROOF_KEY);
+      return json ? JSON.parse(json) : { lovable: "", github: "", deploy: "" };
+    } catch (e) {
+      return { lovable: "", github: "", deploy: "" };
+    }
+  }
+
+  function saveProofState(state) {
+    localStorage.setItem(PROOF_KEY, JSON.stringify(state));
+    updateProofStatus();
+  }
+
+  function renderProofPage() {
+    var state = getProofState();
+
+    var linkLovable = document.getElementById("linkLovable");
+    var linkGithub = document.getElementById("linkGithub");
+    var linkDeploy = document.getElementById("linkDeploy");
+
+    if (linkLovable) linkLovable.value = state.lovable || "";
+    if (linkGithub) linkGithub.value = state.github || "";
+    if (linkDeploy) linkDeploy.value = state.deploy || "";
+
+    bindProofInputs();
+    updateProofStatus();
+  }
+
+  function bindProofInputs() {
+    var inputs = ["linkLovable", "linkGithub", "linkDeploy"];
+    inputs.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && !el.hasAttribute("data-bound")) {
+        el.addEventListener("input", function (e) {
+          var state = getProofState();
+          var key = id.replace("link", "").toLowerCase();
+          state[key] = e.target.value;
+          saveProofState(state);
+        });
+        el.setAttribute("data-bound", "true");
+      }
+    });
+
+    var copyBtn = document.getElementById("copySubmissionBtn");
+    if (copyBtn && !copyBtn.hasAttribute("data-bound")) {
+      copyBtn.addEventListener("click", exportSubmission);
+      copyBtn.setAttribute("data-bound", "true");
+    }
+  }
+
+  function updateProofStatus() {
+    var state = getProofState();
+    var checklistState = getChecklistState();
+
+    // Check if all 10 tests passed
+    var allTestsPassed = checklistItems.every(function (item) {
+      return !!checklistState[item.id];
+    });
+
+    // Check if checks are valid URLs
+    var hasLovable = state.lovable && state.lovable.startsWith("http");
+    var hasGithub = state.github && state.github.startsWith("http");
+    var hasDeploy = state.deploy && state.deploy.startsWith("http");
+    var allLinksPresent = hasLovable && hasGithub && hasDeploy;
+
+    var isShipped = allTestsPassed && allLinksPresent;
+
+    // Update Badge
+    var badge = document.getElementById("proofStatusBadge");
+    if (badge) {
+      if (isShipped) {
+        badge.textContent = "Shipped";
+        badge.className = "proof-badge proof-badge--shipped";
+      } else if (state.lovable || state.github || state.deploy) {
+        badge.textContent = "In Progress";
+        badge.className = "proof-badge proof-badge--progress";
+      } else {
+        badge.textContent = "Not Started";
+        badge.className = "proof-badge";
+      }
+    }
+
+    // Update Submission Text
+    var textEl = document.getElementById("submissionText");
+    var copyBtn = document.getElementById("copySubmissionBtn");
+    var msgEl = document.getElementById("completionMessage");
+
+    if (textEl) {
+      var text = "";
+      text += "Job Notification Tracker — Final Submission\n\n";
+      text += "Lovable Project:\n" + (state.lovable || "{link}") + "\n\n";
+      text += "GitHub Repository:\n" + (state.github || "{link}") + "\n\n";
+      text += "Live Deployment:\n" + (state.deploy || "{link}") + "\n\n";
+      text += "Core Features:\n";
+      text += "- Intelligent match scoring\n";
+      text += "- Daily digest simulation\n";
+      text += "- Status tracking\n";
+      text += "- Test checklist enforced\n";
+      textEl.textContent = text;
+    }
+
+    if (copyBtn) {
+      copyBtn.disabled = !allLinksPresent;
+    }
+
+    if (msgEl) {
+      msgEl.style.opacity = isShipped ? "1" : "0";
+    }
+  }
+
+  function exportSubmission() {
+    var textEl = document.getElementById("submissionText");
+    if (!textEl) return;
+
+    var text = textEl.textContent;
+    navigator.clipboard.writeText(text).then(function () {
+      showToast("Submission copied to clipboard.");
+    }).catch(function () {
+      showToast("Failed to copy. Please select and copy manually.");
+    });
   }
 
   // ============================================================

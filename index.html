@@ -527,62 +527,85 @@
       <section class="route-page" id="route-proof" data-route-page="proof">
         <div class="page-shell">
           <div class="page-header">
-            <h1>Proof of Work</h1>
-            <p class="subtext">
-              Artifacts demonstrating what was built, tested, and shipped.
-            </p>
+            <div class="proof-header-row">
+              <div>
+                <h1>Final Submission</h1>
+                <p class="subtext">
+                  Project 1 · Job Notification Tracker
+                </p>
+              </div>
+              <div class="proof-badge" id="proofStatusBadge">Not Started</div>
+            </div>
           </div>
-          <div class="proof-grid">
-            <div class="proof-card">
-              <div class="proof-card__icon">
-                <svg width="28" height="28" fill="none" viewBox="0 0 28 28">
-                  <rect x="3" y="3" width="22" height="22" rx="3" stroke="currentColor" stroke-width="1.5" />
-                  <path d="M8 14l4 4 8-8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
+
+          <div class="proof-grid-layout">
+            <!-- A) Step Completion Summary -->
+            <div class="proof-section">
+              <h3>Step Completion Summary</h3>
+              <div class="step-summary-list">
+                <div class="step-item step-item--done">
+                  <span class="step-icon">✓</span> 1. Settings Upgrade
+                </div>
+                <div class="step-item step-item--done">
+                  <span class="step-icon">✓</span> 2. Match Score Engine
+                </div>
+                <div class="step-item step-item--done">
+                  <span class="step-icon">✓</span> 3. Dashboard Updates
+                </div>
+                <div class="step-item step-item--done">
+                  <span class="step-icon">✓</span> 4. Filter Bar Logic
+                </div>
+                <div class="step-item step-item--done">
+                  <span class="step-icon">✓</span> 5. CSS Updates
+                </div>
+                <div class="step-item step-item--done">
+                  <span class="step-icon">✓</span> 6. Daily Digest
+                </div>
+                <div class="step-item step-item--done">
+                  <span class="step-icon">✓</span> 7. Status Tracking
+                </div>
+                <div class="step-item step-item--done">
+                  <span class="step-icon">✓</span> 8. Test Checklist
+                </div>
               </div>
-              <h4>UI Built</h4>
-              <p class="text-sm text-muted">
-                Design system, navigation, and page layouts verified.
-              </p>
             </div>
-            <div class="proof-card">
-              <div class="proof-card__icon">
-                <svg width="28" height="28" fill="none" viewBox="0 0 28 28">
-                  <circle cx="14" cy="14" r="11" stroke="currentColor" stroke-width="1.5" />
-                  <path d="M14 8v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                </svg>
+
+            <!-- B) Artifact Collection -->
+            <div class="proof-section">
+              <h3>Artifact Collection</h3>
+              <form id="proofForm" onsubmit="return false;">
+                <div class="input-group">
+                  <label for="linkLovable">Lovable Project Link</label>
+                  <input type="url" id="linkLovable" class="input" placeholder="https://lovable.dev/..." required />
+                </div>
+                <div class="input-group">
+                  <label for="linkGithub">GitHub Repository Link</label>
+                  <input type="url" id="linkGithub" class="input" placeholder="https://github.com/..." required />
+                </div>
+                <div class="input-group">
+                  <label for="linkDeploy">Deployed URL</label>
+                  <input type="url" id="linkDeploy" class="input" placeholder="https://vercel.com/..." required />
+                </div>
+              </form>
+            </div>
+
+            <!-- C) Submission Export -->
+            <div class="proof-section proof-section--full">
+              <h3>Final Submission Export</h3>
+              <div class="submission-card">
+                <pre class="submission-text"
+                  id="submissionText">Fill in all artifact links to generate your submission text.</pre>
+                <div class="submission-actions">
+                  <button class="btn btn-primary" id="copySubmissionBtn" disabled>
+                    Copy Final Submission
+                  </button>
+                </div>
               </div>
-              <h4>Data Loaded</h4>
-              <p class="text-sm text-muted">
-                60 realistic Indian tech jobs rendered with filters.
-              </p>
             </div>
-            <div class="proof-card">
-              <div class="proof-card__icon">
-                <svg width="28" height="28" fill="none" viewBox="0 0 28 28">
-                  <path d="M4 22l6-6m0 0l4-10 4 10m-8 0h8" stroke="currentColor" stroke-width="1.5"
-                    stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </div>
-              <h4>Tests Pending</h4>
-              <p class="text-sm text-muted">
-                Test coverage will follow once core logic is complete.
-              </p>
-            </div>
-            <div class="proof-card">
-              <div class="proof-card__icon">
-                <svg width="28" height="28" fill="none" viewBox="0 0 28 28">
-                  <path
-                    d="M14 4v4m0 16v-4m10-6h-4M8 14H4m17.07-7.07l-2.83 2.83M11.76 16.24l-2.83 2.83m14.14 0l-2.83-2.83M11.76 11.76L8.93 8.93"
-                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                </svg>
-              </div>
-              <h4>Deploy Pending</h4>
-              <p class="text-sm text-muted">
-                Deployment pipeline will be configured after verification.
-              </p>
-            </div>
+          </div>
+
+          <div class="completion-message" id="completionMessage" style="opacity: 0;">
+            Project 1 Shipped Successfully.
           </div>
         </div>
       </section>

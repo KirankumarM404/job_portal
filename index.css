@@ -2021,3 +2021,142 @@ textarea.input {
 .ship-actions {
     margin-top: var(--space-lg);
 }
+/* ============================================================
+   28. PROOF PAGE
+   ============================================================ */
+.proof-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+.proof-badge {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 6px 12px;
+    border-radius: 4px;
+    background: var(--color-border);
+    color: var(--color-muted);
+}
+
+.proof-badge--progress {
+    background: #E3F2FD;
+    color: #1565C0;
+    border: 1px solid #BBDEFB;
+}
+
+.proof-badge--shipped {
+    background: #E8F5E9;
+    color: #2E7D32;
+    border: 1px solid #C8E6C9;
+}
+
+.proof-grid-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.proof-section {
+    background: white;
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--color-border);
+}
+
+.proof-section--full {
+    grid-column: 1 / -1;
+}
+
+.proof-section h3 {
+    font-family: var(--font-heading);
+    font-size: var(--text-md);
+    color: var(--color-text);
+    margin-bottom: var(--space-md);
+    font-weight: 700;
+    padding-bottom: var(--space-xs);
+    border-bottom: 2px solid var(--color-accent);
+    display: inline-block;
+}
+
+/* Step Summary */
+.step-summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.step-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    padding: 6px 10px;
+    border-radius: var(--radius);
+    background: var(--color-bg);
+}
+
+.step-item--done {
+    color: var(--color-text);
+    font-weight: 500;
+    background: #F1F8E9;
+}
+
+.step-icon {
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+/* Submission Card */
+.submission-card {
+    background: var(--color-bg-alt);
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    padding: var(--space-md);
+    position: relative;
+}
+
+.submission-text {
+    font-family: monospace;
+    font-size: var(--text-sm);
+    color: var(--color-text);
+    white-space: pre-wrap;
+    margin-bottom: var(--space-md);
+    background: white;
+    padding: var(--space-sm);
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+}
+
+.submission-actions {
+    text-align: right;
+}
+
+.completion-message {
+    text-align: center;
+    margin-top: var(--space-lg);
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--color-success);
+    font-weight: 600;
+    transition: opacity 1s ease;
+}
+
+@media (max-width: 768px) {
+    .proof-grid-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .proof-header-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
