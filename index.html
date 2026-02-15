@@ -70,35 +70,102 @@
 
       <!-- ──── DASHBOARD ──── -->
       <section class="route-page" id="route-dashboard" data-route-page="dashboard">
-        <div class="page-shell">
+        <div class="page-shell page-shell--wide">
           <div class="page-header">
             <h1>Dashboard</h1>
             <p class="subtext">Your matched jobs, reviewed and ready.</p>
           </div>
-          <div class="empty-state">
+
+          <!-- Filter Bar -->
+          <div class="filter-bar" id="filterBar">
+            <div class="filter-bar__search">
+              <svg class="filter-bar__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5" />
+                <path d="M11.5 11.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+              <input type="text" id="filterKeyword" class="filter-bar__input"
+                placeholder="Search by title or company…" />
+            </div>
+            <select id="filterLocation" class="filter-bar__select">
+              <option value="">All Locations</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Chennai">Chennai</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Pune">Pune</option>
+              <option value="Noida">Noida</option>
+              <option value="Mysuru">Mysuru</option>
+            </select>
+            <select id="filterMode" class="filter-bar__select">
+              <option value="">All Modes</option>
+              <option value="Remote">Remote</option>
+              <option value="Hybrid">Hybrid</option>
+              <option value="Onsite">Onsite</option>
+            </select>
+            <select id="filterExperience" class="filter-bar__select">
+              <option value="">All Experience</option>
+              <option value="Fresher">Fresher</option>
+              <option value="0-1">0–1 years</option>
+              <option value="1-3">1–3 years</option>
+              <option value="3-5">3–5 years</option>
+            </select>
+            <select id="filterSource" class="filter-bar__select">
+              <option value="">All Sources</option>
+              <option value="LinkedIn">LinkedIn</option>
+              <option value="Naukri">Naukri</option>
+              <option value="Indeed">Indeed</option>
+            </select>
+            <select id="filterSort" class="filter-bar__select">
+              <option value="latest">Latest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="salary-high">Salary: High → Low</option>
+              <option value="salary-low">Salary: Low → High</option>
+            </select>
+          </div>
+
+          <!-- Results count -->
+          <div class="results-meta" id="resultsMeta"></div>
+
+          <!-- Job Cards Grid -->
+          <div class="job-grid" id="jobGrid">
+            <!-- Cards rendered by JS -->
+          </div>
+
+          <!-- Empty state (hidden when jobs exist) -->
+          <div class="empty-state" id="dashboardEmpty" style="display: none;">
             <div class="empty-state__icon">
               <svg width="48" height="48" fill="none" viewBox="0 0 48 48">
-                <rect x="6" y="10" width="36" height="28" rx="4" stroke="currentColor" stroke-width="2" />
-                <path d="M6 18h36" stroke="currentColor" stroke-width="2" />
-                <rect x="12" y="24" width="10" height="3" rx="1.5" fill="currentColor" opacity="0.3" />
-                <rect x="12" y="30" width="16" height="3" rx="1.5" fill="currentColor" opacity="0.15" />
+                <circle cx="24" cy="20" r="12" stroke="currentColor" stroke-width="2" />
+                <path d="M16 36c0-4.4 3.6-8 8-8s8 3.6 8 8" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" />
               </svg>
             </div>
-            <h3 class="empty-state__title">No jobs yet</h3>
-            <p class="empty-state__body">In the next step, you will load a realistic dataset.<br />Matched roles will
-              appear here, ready for review.</p>
+            <h3 class="empty-state__title">No matching jobs</h3>
+            <p class="empty-state__body">Try adjusting your filters to see more results.</p>
           </div>
         </div>
       </section>
 
       <!-- ──── SAVED ──── -->
       <section class="route-page" id="route-saved" data-route-page="saved">
-        <div class="page-shell">
+        <div class="page-shell page-shell--wide">
           <div class="page-header">
-            <h1>Saved Jobs</h1>
-            <p class="subtext">Bookmarked roles you want to revisit.</p>
+            <div class="page-header__row">
+              <div>
+                <h1>Saved Jobs</h1>
+                <p class="subtext">Bookmarked roles you want to revisit.</p>
+              </div>
+              <button class="btn btn-ghost btn-sm" id="clearSavedBtn" style="display: none;">Clear All</button>
+            </div>
           </div>
-          <div class="empty-state">
+
+          <!-- Saved Job Cards Grid -->
+          <div class="job-grid" id="savedGrid">
+            <!-- Cards rendered by JS -->
+          </div>
+
+          <!-- Empty state -->
+          <div class="empty-state" id="savedEmpty">
             <div class="empty-state__icon">
               <svg width="48" height="48" fill="none" viewBox="0 0 48 48">
                 <path d="M14 8h20a2 2 0 0 1 2 2v30l-12-8-12 8V10a2 2 0 0 1 2-2z" stroke="currentColor" stroke-width="2"
@@ -144,7 +211,6 @@
 
           <form class="settings-form" id="settingsForm" onsubmit="return false;">
 
-            <!-- Role Keywords -->
             <div class="form-section">
               <div class="input-group">
                 <label for="roleKeywords">Role Keywords</label>
@@ -154,7 +220,6 @@
               </div>
             </div>
 
-            <!-- Preferred Locations -->
             <div class="form-section">
               <div class="input-group">
                 <label for="preferredLocations">Preferred Locations</label>
@@ -164,7 +229,6 @@
               </div>
             </div>
 
-            <!-- Work Mode -->
             <div class="form-section">
               <div class="input-group">
                 <label>Work Mode</label>
@@ -193,7 +257,6 @@
               </div>
             </div>
 
-            <!-- Experience Level -->
             <div class="form-section">
               <div class="input-group">
                 <label for="experienceLevel">Experience Level</label>
@@ -208,7 +271,6 @@
               </div>
             </div>
 
-            <!-- Save Button -->
             <div class="form-actions">
               <button type="submit" class="btn btn-primary" id="savePrefsBtn">Save Preferences</button>
               <span class="form-actions__hint">Preferences are not saved yet — logic will be added in the next
@@ -245,8 +307,8 @@
                   <path d="M14 8v6l4 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                 </svg>
               </div>
-              <h4>Logic Pending</h4>
-              <p class="text-sm text-muted">Matching and filtering will be implemented in the next step.</p>
+              <h4>Data Loaded</h4>
+              <p class="text-sm text-muted">60 realistic Indian tech jobs rendered with filters.</p>
             </div>
             <div class="proof-card">
               <div class="proof-card__icon">
@@ -285,10 +347,29 @@
 
   </div>
 
+  <!-- ============================================ -->
+  <!-- JOB DETAIL MODAL                             -->
+  <!-- ============================================ -->
+  <div class="modal-overlay" id="jobModal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal__header">
+        <h2 id="modalTitle" class="modal__title"></h2>
+        <button class="modal__close" id="modalCloseBtn" aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal__body">
+        <div class="modal__meta" id="modalMeta"></div>
+        <div class="modal__description" id="modalDescription"></div>
+        <div class="modal__skills" id="modalSkills"></div>
+      </div>
+      <div class="modal__footer" id="modalFooter"></div>
+    </div>
+  </div>
+
   <!-- Toast -->
   <div class="toast" id="toast"></div>
 
-  <!-- App Logic -->
+  <!-- Data + App Logic -->
+  <script src="data.js"></script>
   <script src="app.js"></script>
 </body>
 
