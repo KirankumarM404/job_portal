@@ -1299,7 +1299,8 @@ textarea.input {
     justify-content: center;
   }
 
-  .radio-group {
+  .radio-group,
+  .checkbox-group {
     flex-direction: column;
   }
 
@@ -1311,4 +1312,259 @@ textarea.input {
   .page-header__row {
     flex-direction: column;
   }
+}
+
+
+/* ============================================================
+   20. SCORE BADGES
+   ============================================================ */
+.score-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 36px;
+  padding: 3px 8px;
+  border-radius: 100px;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.score-badge--green {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid #C8E6C9;
+}
+
+.score-badge--amber {
+  background: #FFF8E1;
+  color: #F57F17;
+  border: 1px solid #FFECB3;
+}
+
+.score-badge--neutral {
+  background: #F5F5F5;
+  color: #616161;
+  border: 1px solid #E0E0E0;
+}
+
+.score-badge--grey {
+  background: #FAFAFA;
+  color: #9E9E9E;
+  border: 1px solid #EEEEEE;
+}
+
+
+/* ============================================================
+   21. MATCH TOGGLE
+   ============================================================ */
+.match-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.match-toggle input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.match-toggle__track {
+  position: relative;
+  width: 38px;
+  height: 20px;
+  background: var(--color-border);
+  border-radius: 100px;
+  transition: background var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.match-toggle__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: transform var(--transition-fast);
+}
+
+.match-toggle input[type="checkbox"]:checked~.match-toggle__track {
+  background: var(--color-accent);
+}
+
+.match-toggle input[type="checkbox"]:checked~.match-toggle__track .match-toggle__thumb {
+  transform: translateX(18px);
+}
+
+.match-toggle__label {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+
+/* ============================================================
+   22. PREFERENCES BANNER
+   ============================================================ */
+.prefs-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 12px var(--space-sm);
+  background: #FFF8E1;
+  border: 1px solid #FFECB3;
+  border-radius: var(--radius);
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: #6D4C00;
+}
+
+.prefs-banner svg {
+  flex-shrink: 0;
+  color: #F57F17;
+}
+
+.prefs-banner a {
+  color: var(--color-accent);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+
+/* ============================================================
+   23. RANGE SLIDER
+   ============================================================ */
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.range-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: var(--color-border);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(139, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
+.range-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(139, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.slider-value {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: 700;
+  color: var(--color-accent);
+  min-width: 32px;
+  text-align: center;
+}
+
+
+/* ============================================================
+   24. CHECKBOX GROUP (pill-style)
+   ============================================================ */
+.checkbox-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  cursor: pointer;
+  user-select: none;
+  padding: 8px 14px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 100px;
+  transition: all var(--transition-fast);
+}
+
+.checkbox-label:hover {
+  border-color: var(--color-accent);
+  background: rgba(139, 0, 0, 0.03);
+}
+
+.checkbox-label input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.checkbox-custom {
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 3px;
+  position: relative;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.checkbox-label input[type="checkbox"]:checked~.checkbox-custom {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.checkbox-label input[type="checkbox"]:checked~.checkbox-custom::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 4px;
+  height: 8px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox-label:has(input[type="checkbox"]:checked) {
+  border-color: var(--color-accent);
+  background: rgba(139, 0, 0, 0.04);
+  color: var(--color-accent);
+  font-weight: 500;
 }

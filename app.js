@@ -2,7 +2,8 @@
    Job Notification Tracker — App Logic
    ============================================================
    Hash-based SPA router, job rendering, filters, save/apply,
-   modal, hamburger menu, toast. No frameworks.
+   modal, hamburger menu, toast, PREFERENCES, MATCH SCORING.
+   No frameworks.
    ============================================================ */
 
 (function () {
@@ -19,7 +20,10 @@
   // Dashboard
   var jobGrid = document.getElementById('jobGrid');
   var dashboardEmpty = document.getElementById('dashboardEmpty');
+  var emptyTitle = document.getElementById('emptyTitle');
+  var emptyBody = document.getElementById('emptyBody');
   var resultsMeta = document.getElementById('resultsMeta');
+  var prefsBanner = document.getElementById('prefsBanner');
 
   // Saved
   var savedGrid = document.getElementById('savedGrid');
@@ -33,6 +37,8 @@
   var filterExperience = document.getElementById('filterExperience');
   var filterSource = document.getElementById('filterSource');
   var filterSort = document.getElementById('filterSort');
+  var matchToggle = document.getElementById('matchToggle');
+  var matchToggleWrap = document.getElementById('matchToggleWrap');
 
   // Modal
   var jobModal = document.getElementById('jobModal');
@@ -43,11 +49,25 @@
   var modalFooter = document.getElementById('modalFooter');
   var modalCloseBtn = document.getElementById('modalCloseBtn');
 
+  // Settings
+  var settingsForm = document.getElementById('settingsForm');
+  var roleKeywordsInput = document.getElementById('roleKeywords');
+  var experienceLevelSelect = document.getElementById('experienceLevel');
+  var prefSkillsInput = document.getElementById('prefSkills');
+  var minMatchScoreSlider = document.getElementById('minMatchScore');
+  var sliderValueDisplay = document.getElementById('sliderValue');
+  var savePrefsBtn = document.getElementById('savePrefsBtn');
+  var clearPrefsBtn = document.getElementById('clearPrefsBtn');
+
   // ── Constants ──
   var validRoutes = ['landing', 'dashboard', 'saved', 'digest', 'settings', 'proof'];
   var defaultRoute = 'landing';
   var currentRoute = null;
   var SAVED_KEY = 'jnt_saved_jobs';
+  var PREFS_KEY = 'jobTrackerPreferences';
+
+  // Cached scores — recalculated per render cycle
+  var scoreCache = {};
 
 
   // ============================================================
@@ -86,6 +106,7 @@
     // Render content for specific routes
     if (route === 'dashboard') renderDashboard();
     if (route === 'saved') renderSavedPage();
+    if (route === 'settings') prefillSettingsForm();
   }
 
   function handleHashChange() {
@@ -172,6 +193,245 @@
 
 
   // ============================================================
+  //  PREFERENCES — localStorage
+  // ============================================================
+
+  function getPreferences() {
+    try {
+      var data = JSON.parse(localStorage.getItem(PREFS_KEY));
+      return (data && typeof data === 'object') ? data : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function savePreferences(prefs) {
+    localStorage.setItem(PREFS_KEY, JSON.stringify(prefs));
+  }
+
+  function clearPreferences() {
+    localStorage.removeItem(PREFS_KEY);
+  }
+
+  function hasPreferences() {
+    return getPreferences() !== null;
+  }
+
+  /**
+   * Read current settings form values and return a prefs object.
+   */
+  function readFormPreferences() {
+    var prefs = {};
+
+    // Role keywords
+    prefs.roleKeywords = parseCSV(roleKeywordsInput ? roleKeywordsInput.value : '');
+
+    // Locations (checkboxes)
+    prefs.preferredLocations = getCheckedValues('prefLocation');
+
+    // Modes (checkboxes)
+    prefs.preferredModes = getCheckedValues('prefMode');
+
+    // Experience level (dropdown)
+    prefs.experienceLevel = experienceLevelSelect ? experienceLevelSelect.value : '';
+
+    // Skills
+    prefs.skills = parseCSV(prefSkillsInput ? prefSkillsInput.value : '');
+
+    // Min match score
+    prefs.minMatchScore = minMatchScoreSlider ? parseInt(minMatchScoreSlider.value, 10) : 40;
+
+    return prefs;
+  }
+
+  /**
+   * Prefill settings form from stored preferences.
+   */
+  function prefillSettingsForm() {
+    var prefs = getPreferences();
+    if (!prefs) return;
+
+    // Role keywords
+    if (roleKeywordsInput && prefs.roleKeywords) {
+      roleKeywordsInput.value = prefs.roleKeywords.join(', ');
+    }
+
+    // Locations checkboxes
+    if (prefs.preferredLocations) {
+      setCheckedValues('prefLocation', prefs.preferredLocations);
+    }
+
+    // Modes checkboxes
+    if (prefs.preferredModes) {
+      setCheckedValues('prefMode', prefs.preferredModes);
+    }
+
+    // Experience level
+    if (experienceLevelSelect && prefs.experienceLevel) {
+      experienceLevelSelect.value = prefs.experienceLevel;
+    }
+
+    // Skills
+    if (prefSkillsInput && prefs.skills) {
+      prefSkillsInput.value = prefs.skills.join(', ');
+    }
+
+    // Min match score slider
+    if (minMatchScoreSlider && typeof prefs.minMatchScore === 'number') {
+      minMatchScoreSlider.value = prefs.minMatchScore;
+      if (sliderValueDisplay) sliderValueDisplay.textContent = prefs.minMatchScore;
+    }
+  }
+
+  /**
+   * Reset all settings form fields to defaults.
+   */
+  function resetSettingsForm() {
+    if (roleKeywordsInput) roleKeywordsInput.value = '';
+    if (prefSkillsInput) prefSkillsInput.value = '';
+    if (experienceLevelSelect) experienceLevelSelect.selectedIndex = 0;
+    if (minMatchScoreSlider) {
+      minMatchScoreSlider.value = 40;
+      if (sliderValueDisplay) sliderValueDisplay.textContent = '40';
+    }
+    clearCheckedValues('prefLocation');
+    clearCheckedValues('prefMode');
+  }
+
+
+  // ============================================================
+  //  MATCH SCORE ENGINE
+  // ============================================================
+
+  /**
+   * Experience level mapping: settings value → matching job experience values.
+   */
+  var EXP_MAP = {
+    'intern': ['Fresher'],
+    'junior': ['Fresher', '0-1'],
+    'mid': ['1-3', '3-5'],
+    'senior': ['3-5'],
+    'lead': ['3-5']
+  };
+
+  /**
+   * Compute deterministic match score for a job against preferences.
+   * Rules:
+   *   +25  any roleKeyword in job.title (case-insensitive)
+   *   +15  any roleKeyword in job.description (only if NOT already matched in title scoring)
+   *   +15  job.location in preferredLocations
+   *   +10  job.mode in preferredModes
+   *   +10  job.experience matches experienceLevel (mapped)
+   *   +15  any overlap between job.skills and user.skills
+   *   +5   postedDaysAgo <= 2
+   *   +5   source === "LinkedIn"
+   *   Cap at 100.
+   */
+  function computeMatchScore(job, prefs) {
+    if (!prefs) return 0;
+
+    var score = 0;
+    var titleLower = job.title.toLowerCase();
+    var descLower = job.description.toLowerCase();
+
+    // +25 roleKeyword in title
+    var titleMatched = false;
+    if (prefs.roleKeywords && prefs.roleKeywords.length > 0) {
+      for (var i = 0; i < prefs.roleKeywords.length; i++) {
+        var kw = prefs.roleKeywords[i].toLowerCase();
+        if (kw && titleLower.indexOf(kw) !== -1) {
+          titleMatched = true;
+          break;
+        }
+      }
+      if (titleMatched) score += 25;
+    }
+
+    // +15 roleKeyword in description (only if NOT already title-matched)
+    if (!titleMatched && prefs.roleKeywords && prefs.roleKeywords.length > 0) {
+      for (var d = 0; d < prefs.roleKeywords.length; d++) {
+        var dkw = prefs.roleKeywords[d].toLowerCase();
+        if (dkw && descLower.indexOf(dkw) !== -1) {
+          score += 15;
+          break;
+        }
+      }
+    }
+
+    // +15 location match
+    if (prefs.preferredLocations && prefs.preferredLocations.length > 0) {
+      if (prefs.preferredLocations.indexOf(job.location) !== -1) {
+        score += 15;
+      }
+    }
+
+    // +10 mode match
+    if (prefs.preferredModes && prefs.preferredModes.length > 0) {
+      if (prefs.preferredModes.indexOf(job.mode) !== -1) {
+        score += 10;
+      }
+    }
+
+    // +10 experience match (mapped)
+    if (prefs.experienceLevel && EXP_MAP[prefs.experienceLevel]) {
+      var expValues = EXP_MAP[prefs.experienceLevel];
+      if (expValues.indexOf(job.experience) !== -1) {
+        score += 10;
+      }
+    }
+
+    // +15 skills overlap (any match)
+    if (prefs.skills && prefs.skills.length > 0 && job.skills && job.skills.length > 0) {
+      var userSkillsLower = prefs.skills.map(function (s) { return s.toLowerCase(); });
+      var matched = false;
+      for (var s = 0; s < job.skills.length; s++) {
+        if (userSkillsLower.indexOf(job.skills[s].toLowerCase()) !== -1) {
+          matched = true;
+          break;
+        }
+      }
+      if (matched) score += 15;
+    }
+
+    // +5 fresh posting
+    if (job.postedDaysAgo <= 2) {
+      score += 5;
+    }
+
+    // +5 LinkedIn source
+    if (job.source === 'LinkedIn') {
+      score += 5;
+    }
+
+    // Cap at 100
+    return Math.min(score, 100);
+  }
+
+  /**
+   * Rebuild score cache for all jobs. Called once per render.
+   */
+  function rebuildScoreCache() {
+    scoreCache = {};
+    var prefs = getPreferences();
+    if (!prefs) return;
+
+    for (var i = 0; i < JOB_DATA.length; i++) {
+      scoreCache[JOB_DATA[i].id] = computeMatchScore(JOB_DATA[i], prefs);
+    }
+  }
+
+  /**
+   * Get the score badge tier class suffix.
+   */
+  function scoreTier(score) {
+    if (score >= 80) return 'green';
+    if (score >= 60) return 'amber';
+    if (score >= 40) return 'neutral';
+    return 'grey';
+  }
+
+
+  // ============================================================
   //  HELPERS
   // ============================================================
 
@@ -191,6 +451,34 @@
     return 'source-badge source-badge--' + source.toLowerCase();
   }
 
+  function parseCSV(str) {
+    if (!str) return [];
+    return str.split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });
+  }
+
+  function getCheckedValues(name) {
+    var checked = [];
+    var boxes = document.querySelectorAll('input[name="' + name + '"]:checked');
+    for (var i = 0; i < boxes.length; i++) {
+      checked.push(boxes[i].value);
+    }
+    return checked;
+  }
+
+  function setCheckedValues(name, values) {
+    var boxes = document.querySelectorAll('input[name="' + name + '"]');
+    for (var i = 0; i < boxes.length; i++) {
+      boxes[i].checked = values.indexOf(boxes[i].value) !== -1;
+    }
+  }
+
+  function clearCheckedValues(name) {
+    var boxes = document.querySelectorAll('input[name="' + name + '"]');
+    for (var i = 0; i < boxes.length; i++) {
+      boxes[i].checked = false;
+    }
+  }
+
 
   // ============================================================
   //  FILTERING & SORTING
@@ -203,6 +491,9 @@
     var experience = filterExperience.value;
     var source = filterSource.value;
     var sort = filterSort.value;
+    var thresholdOn = matchToggle && matchToggle.checked;
+    var prefs = getPreferences();
+    var threshold = (prefs && typeof prefs.minMatchScore === 'number') ? prefs.minMatchScore : 40;
 
     var jobs = JOB_DATA.filter(function (job) {
       // Keyword — match title or company
@@ -214,6 +505,13 @@
       if (mode && job.mode !== mode) return false;
       if (experience && job.experience !== experience) return false;
       if (source && job.source !== source) return false;
+
+      // Threshold filter — only when toggle is on AND prefs exist
+      if (thresholdOn && prefs) {
+        var jobScore = (typeof scoreCache[job.id] === 'number') ? scoreCache[job.id] : 0;
+        if (jobScore < threshold) return false;
+      }
+
       return true;
     });
 
@@ -222,6 +520,12 @@
       jobs.sort(function (a, b) { return a.postedDaysAgo - b.postedDaysAgo; });
     } else if (sort === 'oldest') {
       jobs.sort(function (a, b) { return b.postedDaysAgo - a.postedDaysAgo; });
+    } else if (sort === 'match-score') {
+      jobs.sort(function (a, b) {
+        var sa = (typeof scoreCache[a.id] === 'number') ? scoreCache[a.id] : 0;
+        var sb = (typeof scoreCache[b.id] === 'number') ? scoreCache[b.id] : 0;
+        return sb - sa;
+      });
     } else if (sort === 'salary-high' || sort === 'salary-low') {
       jobs.sort(function (a, b) {
         var sa = parseSalaryApprox(a.salaryRange);
@@ -236,17 +540,15 @@
   // Rough salary parser — extracts first number for sorting
   function parseSalaryApprox(s) {
     if (!s) return 0;
-    // Match "₹15k" → 15000, "3.6" → 360000, "10" → 1000000
     var match = s.match(/([\d.]+)/);
     if (!match) return 0;
     var num = parseFloat(match[1]);
     if (s.toLowerCase().indexOf('lpa') !== -1) return num * 100000;
     if (s.toLowerCase().indexOf('/month') !== -1) {
-      // "₹40k/month" → 40 * 1000 * 12 for annual comparison
       if (s.toLowerCase().indexOf('k') !== -1) return num * 1000 * 12;
       return num * 12;
     }
-    return num * 100000; // default treat as LPA
+    return num * 100000;
   }
 
 
@@ -257,17 +559,24 @@
   function buildJobCardHTML(job, options) {
     var saved = isJobSaved(job.id);
     var isSavedPage = options && options.savedPage;
+    var showScore = hasPreferences();
+    var score = showScore ? ((typeof scoreCache[job.id] === 'number') ? scoreCache[job.id] : 0) : 0;
 
     var html = '';
     html += '<div class="job-card" data-job-id="' + job.id + '">';
 
-    // Header: title + source badge
+    // Header: title + score badge + source badge
     html += '  <div class="job-card__header">';
     html += '    <div>';
     html += '      <div class="job-card__title">' + escapeHtml(job.title) + '</div>';
     html += '      <div class="job-card__company">' + escapeHtml(job.company) + '</div>';
     html += '    </div>';
-    html += '    <span class="' + sourceBadgeClass(job.source) + '">' + escapeHtml(job.source) + '</span>';
+    html += '    <div style="display:flex;align-items:center;gap:6px;">';
+    if (showScore) {
+      html += '      <span class="score-badge score-badge--' + scoreTier(score) + '">' + score + '</span>';
+    }
+    html += '      <span class="' + sourceBadgeClass(job.source) + '">' + escapeHtml(job.source) + '</span>';
+    html += '    </div>';
     html += '  </div>';
 
     // Meta tags
@@ -314,12 +623,37 @@
   // ============================================================
 
   function renderDashboard() {
+    // Rebuild score cache once per render
+    rebuildScoreCache();
+
+    var prefsExist = hasPreferences();
+
+    // Show/hide preferences banner
+    if (prefsBanner) {
+      prefsBanner.style.display = prefsExist ? 'none' : 'flex';
+    }
+
+    // Show/hide match toggle
+    if (matchToggleWrap) {
+      matchToggleWrap.style.display = prefsExist ? '' : 'none';
+    }
+
     var jobs = getFilteredJobs();
+    var thresholdOn = matchToggle && matchToggle.checked;
 
     if (jobs.length === 0) {
       jobGrid.innerHTML = '';
       jobGrid.style.display = 'none';
       dashboardEmpty.style.display = 'flex';
+
+      // Contextual empty state
+      if (thresholdOn && prefsExist) {
+        if (emptyTitle) emptyTitle.textContent = 'No roles match your criteria';
+        if (emptyBody) emptyBody.textContent = 'Adjust filters or lower your match threshold in Settings.';
+      } else {
+        if (emptyTitle) emptyTitle.textContent = 'No matching jobs';
+        if (emptyBody) emptyBody.textContent = 'Try adjusting your filters to see more results.';
+      }
       resultsMeta.textContent = 'No results found';
     } else {
       dashboardEmpty.style.display = 'none';
@@ -361,6 +695,9 @@
       savedGrid.style.display = '';
       if (clearSavedBtn) clearSavedBtn.style.display = '';
 
+      // Rebuild scores for saved page too
+      rebuildScoreCache();
+
       var html = '';
       for (var j = 0; j < jobs.length; j++) {
         html += buildJobCardHTML(jobs[j], { savedPage: true });
@@ -377,20 +714,17 @@
   // ============================================================
 
   function bindCardActions(container, isSavedPage) {
-    // View buttons
     var viewBtns = container.querySelectorAll('.btn-view');
     for (var i = 0; i < viewBtns.length; i++) {
       viewBtns[i].addEventListener('click', handleViewClick);
     }
 
     if (isSavedPage) {
-      // Unsave buttons
       var unsaveBtns = container.querySelectorAll('.btn-unsave');
       for (var j = 0; j < unsaveBtns.length; j++) {
         unsaveBtns[j].addEventListener('click', handleUnsaveClick);
       }
     } else {
-      // Save buttons
       var saveBtns = container.querySelectorAll('.btn-save');
       for (var k = 0; k < saveBtns.length; k++) {
         saveBtns[k].addEventListener('click', handleSaveClick);
@@ -442,7 +776,16 @@
   // ============================================================
 
   function openModal(job) {
-    modalTitle.textContent = job.title + ' — ' + job.company;
+    var showScore = hasPreferences();
+    var score = showScore ? ((typeof scoreCache[job.id] === 'number') ? scoreCache[job.id] : 0) : 0;
+
+    // Title (with score if available)
+    if (showScore) {
+      modalTitle.innerHTML = escapeHtml(job.title) + ' — ' + escapeHtml(job.company) +
+        ' <span class="score-badge score-badge--' + scoreTier(score) + '" style="margin-left:8px;vertical-align:middle;">' + score + '</span>';
+    } else {
+      modalTitle.textContent = job.title + ' — ' + job.company;
+    }
 
     // Meta
     var metaHTML = '';
@@ -490,7 +833,6 @@
           this.textContent = '✓ Saved';
           showToast('Job saved');
         }
-        // Sync dashboard save buttons
         syncSaveButtons(jid);
       });
     }
@@ -555,6 +897,7 @@
   if (filterExperience) filterExperience.addEventListener('change', handleFilterChange);
   if (filterSource) filterSource.addEventListener('change', handleFilterChange);
   if (filterSort) filterSort.addEventListener('change', handleFilterChange);
+  if (matchToggle) matchToggle.addEventListener('change', handleFilterChange);
 
 
   // ============================================================
@@ -571,14 +914,33 @@
 
 
   // ============================================================
-  //  SETTINGS — Save Preferences Toast
+  //  SETTINGS — Save / Clear Preferences
   // ============================================================
 
-  var savePrefsBtn = document.getElementById('savePrefsBtn');
   if (savePrefsBtn) {
     savePrefsBtn.addEventListener('click', function (e) {
       e.preventDefault();
-      showToast('Preferences noted — logic will be added in the next step.');
+      var prefs = readFormPreferences();
+      savePreferences(prefs);
+      showToast('Preferences saved — scores will update on Dashboard.');
+      // Invalidate cache so next dashboard render recalculates
+      scoreCache = {};
+    });
+  }
+
+  if (clearPrefsBtn) {
+    clearPrefsBtn.addEventListener('click', function () {
+      clearPreferences();
+      resetSettingsForm();
+      scoreCache = {};
+      showToast('Preferences cleared.');
+    });
+  }
+
+  // Live slider value update
+  if (minMatchScoreSlider && sliderValueDisplay) {
+    minMatchScoreSlider.addEventListener('input', function () {
+      sliderValueDisplay.textContent = this.value;
     });
   }
 

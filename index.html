@@ -76,6 +76,16 @@
             <p class="subtext">Your matched jobs, reviewed and ready.</p>
           </div>
 
+          <!-- Preferences Banner (shown when no prefs saved) -->
+          <div class="prefs-banner" id="prefsBanner" style="display: none;">
+            <svg width="20" height="20" fill="none" viewBox="0 0 20 20">
+              <circle cx="10" cy="10" r="8.5" stroke="currentColor" stroke-width="1.5" />
+              <path d="M10 6v5m0 3v.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            <span>Set your <a href="#/settings">preferences</a> to activate intelligent matching.</span>
+          </div>
+
+
           <!-- Filter Bar -->
           <div class="filter-bar" id="filterBar">
             <div class="filter-bar__search">
@@ -117,10 +127,18 @@
             </select>
             <select id="filterSort" class="filter-bar__select">
               <option value="latest">Latest First</option>
+              <option value="match-score">Match Score</option>
               <option value="oldest">Oldest First</option>
               <option value="salary-high">Salary: High → Low</option>
               <option value="salary-low">Salary: Low → High</option>
             </select>
+            <label class="match-toggle" id="matchToggleWrap" style="display: none;">
+              <input type="checkbox" id="matchToggle" />
+              <span class="match-toggle__track">
+                <span class="match-toggle__thumb"></span>
+              </span>
+              <span class="match-toggle__label">Above threshold only</span>
+            </label>
           </div>
 
           <!-- Results count -->
@@ -222,38 +240,39 @@
 
             <div class="form-section">
               <div class="input-group">
-                <label for="preferredLocations">Preferred Locations</label>
-                <input type="text" id="preferredLocations" class="input"
-                  placeholder="e.g. Bangalore, Mumbai, Hyderabad" />
-                <span class="input-hint">Comma-separated cities. Leave blank for all locations.</span>
+                <label>Preferred Locations</label>
+                <div class="checkbox-group" id="locationCheckboxes">
+                  <label class="checkbox-label"><input type="checkbox" name="prefLocation" value="Bangalore" /><span
+                      class="checkbox-custom"></span><span>Bangalore</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="prefLocation" value="Chennai" /><span
+                      class="checkbox-custom"></span><span>Chennai</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="prefLocation" value="Hyderabad" /><span
+                      class="checkbox-custom"></span><span>Hyderabad</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="prefLocation" value="Mumbai" /><span
+                      class="checkbox-custom"></span><span>Mumbai</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="prefLocation" value="Pune" /><span
+                      class="checkbox-custom"></span><span>Pune</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="prefLocation" value="Noida" /><span
+                      class="checkbox-custom"></span><span>Noida</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="prefLocation" value="Mysuru" /><span
+                      class="checkbox-custom"></span><span>Mysuru</span></label>
+                </div>
+                <span class="input-hint">Select cities you'd work in. Leave unchecked for all.</span>
               </div>
             </div>
 
             <div class="form-section">
               <div class="input-group">
                 <label>Work Mode</label>
-                <div class="radio-group">
-                  <label class="radio-label">
-                    <input type="radio" name="workMode" value="remote" />
-                    <span class="radio-custom"></span>
-                    <span>Remote</span>
-                  </label>
-                  <label class="radio-label">
-                    <input type="radio" name="workMode" value="hybrid" />
-                    <span class="radio-custom"></span>
-                    <span>Hybrid</span>
-                  </label>
-                  <label class="radio-label">
-                    <input type="radio" name="workMode" value="onsite" />
-                    <span class="radio-custom"></span>
-                    <span>On-site</span>
-                  </label>
-                  <label class="radio-label">
-                    <input type="radio" name="workMode" value="any" checked />
-                    <span class="radio-custom"></span>
-                    <span>Any</span>
-                  </label>
+                <div class="checkbox-group" id="modeCheckboxes">
+                  <label class="checkbox-label"><input type="checkbox" name="prefMode" value="Remote" /><span
+                      class="checkbox-custom"></span><span>Remote</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="prefMode" value="Hybrid" /><span
+                      class="checkbox-custom"></span><span>Hybrid</span></label>
+                  <label class="checkbox-label"><input type="checkbox" name="prefMode" value="Onsite" /><span
+                      class="checkbox-custom"></span><span>On-site</span></label>
                 </div>
+                <span class="input-hint">Check all that apply. Leave unchecked for any mode.</span>
               </div>
             </div>
 
@@ -271,10 +290,29 @@
               </div>
             </div>
 
+            <div class="form-section">
+              <div class="input-group">
+                <label for="prefSkills">Skills</label>
+                <input type="text" id="prefSkills" class="input"
+                  placeholder="e.g. React, JavaScript, TypeScript, Node.js" />
+                <span class="input-hint">Comma-separated. We'll match against job skill tags.</span>
+              </div>
+            </div>
+
+            <div class="form-section">
+              <div class="input-group">
+                <label for="minMatchScore">Minimum Match Score</label>
+                <div class="slider-row">
+                  <input type="range" id="minMatchScore" class="range-slider" min="0" max="100" value="40" />
+                  <span class="slider-value" id="sliderValue">40</span>
+                </div>
+                <span class="input-hint">Jobs below this score are hidden when the threshold toggle is on.</span>
+              </div>
+            </div>
+
             <div class="form-actions">
               <button type="submit" class="btn btn-primary" id="savePrefsBtn">Save Preferences</button>
-              <span class="form-actions__hint">Preferences are not saved yet — logic will be added in the next
-                step.</span>
+              <button type="button" class="btn btn-ghost" id="clearPrefsBtn">Clear Preferences</button>
             </div>
 
           </form>
