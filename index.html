@@ -1,19 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="KodNest Premium Build System — A calm, intentional design system for serious SaaS products." />
-  <title>KodNest Premium Build System</title>
+  <meta name="description" content="Job Notification Tracker — Built on the KodNest Premium Design System." />
+  <title>Job Notification Tracker — KodNest</title>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap"
+    rel="stylesheet" />
 
   <!-- Design System -->
   <link rel="stylesheet" href="index.css" />
 </head>
+
 <body>
 
   <div class="app-shell">
@@ -22,281 +26,71 @@
     <!-- TOP BAR                                      -->
     <!-- ============================================ -->
     <header class="top-bar">
-      <div class="top-bar__project">KodNest Premium Build System</div>
-      <div class="top-bar__progress" id="stepIndicator">Step 1 / 4</div>
-      <div class="top-bar__status">
-        <span class="badge badge--idle" id="statusBadge">Not Started</span>
-      </div>
+      <div class="top-bar__project">Job Notification Tracker</div>
+
+      <!-- Hamburger (mobile only) -->
+      <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation" aria-expanded="false">
+        <span class="hamburger-btn__icon" id="hamburgerIcon">&#9776;</span>
+      </button>
+
+      <!-- Navigation -->
+      <nav class="nav-bar" id="navBar">
+        <div class="nav-bar__links" id="navLinks">
+          <a href="#/dashboard" data-route="dashboard" class="nav-link">Dashboard</a>
+          <a href="#/saved" data-route="saved" class="nav-link">Saved</a>
+          <a href="#/digest" data-route="digest" class="nav-link">Digest</a>
+          <a href="#/settings" data-route="settings" class="nav-link">Settings</a>
+          <a href="#/proof" data-route="proof" class="nav-link">Proof</a>
+        </div>
+      </nav>
     </header>
 
     <!-- ============================================ -->
-    <!-- CONTEXT HEADER                               -->
+    <!-- ROUTE PAGES                                  -->
     <!-- ============================================ -->
-    <section class="context-header">
-      <h1>Design System Reference</h1>
-      <p class="subtext">Every token, component, and layout pattern lives here. One system, one voice.</p>
-    </section>
+    <main class="route-container">
 
-    <!-- ============================================ -->
-    <!-- MAIN CONTENT: Workspace + Side Panel         -->
-    <!-- ============================================ -->
-    <main class="main-content">
 
-      <!-- PRIMARY WORKSPACE (70%) -->
-      <div class="workspace">
-        <div class="stack stack--md">
 
-          <!-- ──── SECTION: Typography ──── -->
-          <div>
-            <p class="section-title">Typography</p>
-            <div class="card">
-              <div class="card__body stack stack--sm">
-                <h1>Heading One — Playfair Display</h1>
-                <h2>Heading Two — Confident &amp; Generous</h2>
-                <h3>Heading Three — Clear Hierarchy</h3>
-                <h4>Heading Four — Supporting Detail</h4>
-                <hr class="divider" />
-                <p>Body text is set in Inter at 16–18px with generous line-height. It breathes. The maximum width of any text block is 720px to maintain a comfortable reading measure. This paragraph demonstrates that constraint.</p>
-                <p class="text-muted text-sm">Muted secondary text for captions, metadata, and supporting context.</p>
-              </div>
-            </div>
-          </div>
+      <!-- Dashboard -->
+      <section class="route-page" id="route-dashboard" data-route-page="dashboard">
+        <h1>Dashboard</h1>
+        <p class="subtext">This section will be built in the next step.</p>
+      </section>
 
-          <!-- ──── SECTION: Buttons ──── -->
-          <div>
-            <p class="section-title">Buttons</p>
-            <div class="card">
-              <div class="card__body stack stack--sm">
-                <div class="row row--sm row--wrap">
-                  <button class="btn btn-primary">Primary Action</button>
-                  <button class="btn btn-secondary">Secondary Action</button>
-                  <button class="btn btn-ghost">Ghost Action</button>
-                </div>
-                <div class="row row--sm row--wrap">
-                  <button class="btn btn-primary btn-sm">Small Primary</button>
-                  <button class="btn btn-secondary btn-sm">Small Secondary</button>
-                  <button class="btn btn-ghost btn-sm">Small Ghost</button>
-                </div>
-                <div class="row row--sm row--wrap">
-                  <button class="btn btn-primary" disabled>Disabled Primary</button>
-                  <button class="btn btn-secondary" disabled>Disabled Secondary</button>
-                </div>
-              </div>
-            </div>
-          </div>
+      <!-- Saved -->
+      <section class="route-page" id="route-saved" data-route-page="saved">
+        <h1>Saved</h1>
+        <p class="subtext">This section will be built in the next step.</p>
+      </section>
 
-          <!-- ──── SECTION: Inputs ──── -->
-          <div>
-            <p class="section-title">Inputs</p>
-            <div class="card">
-              <div class="card__body stack stack--sm">
-                <div class="input-group">
-                  <label for="input-demo">Project Name</label>
-                  <input type="text" id="input-demo" class="input" placeholder="Enter your project name" />
-                </div>
-                <div class="input-group">
-                  <label for="textarea-demo">Description</label>
-                  <textarea id="textarea-demo" class="input" placeholder="Describe what you are building"></textarea>
-                </div>
-              </div>
-            </div>
-          </div>
+      <!-- Digest -->
+      <section class="route-page" id="route-digest" data-route-page="digest">
+        <h1>Digest</h1>
+        <p class="subtext">This section will be built in the next step.</p>
+      </section>
 
-          <!-- ──── SECTION: Cards ──── -->
-          <div>
-            <p class="section-title">Cards</p>
-            <div class="card">
-              <div class="card__header">
-                <div class="card__title">Build Configuration</div>
-                <div class="card__subtitle">Last updated 2 hours ago</div>
-              </div>
-              <div class="card__body">
-                <p>Cards use a subtle 1px border, balanced padding, and no drop shadows. Content hierarchy is achieved through typography weight and color alone.</p>
-              </div>
-              <div class="card__footer">
-                <button class="btn btn-primary btn-sm">Save Changes</button>
-                <button class="btn btn-ghost btn-sm">Cancel</button>
-              </div>
-            </div>
-          </div>
+      <!-- Settings -->
+      <section class="route-page" id="route-settings" data-route-page="settings">
+        <h1>Settings</h1>
+        <p class="subtext">This section will be built in the next step.</p>
+      </section>
 
-          <!-- ──── SECTION: Badges ──── -->
-          <div>
-            <p class="section-title">Status Badges</p>
-            <div class="card">
-              <div class="card__body">
-                <div class="row row--sm row--wrap">
-                  <span class="badge badge--idle">Not Started</span>
-                  <span class="badge badge--active">In Progress</span>
-                  <span class="badge badge--shipped">Shipped</span>
-                </div>
-              </div>
-            </div>
-          </div>
+      <!-- Proof -->
+      <section class="route-page" id="route-proof" data-route-page="proof">
+        <h1>Proof</h1>
+        <p class="subtext">This section will be built in the next step.</p>
+      </section>
 
-          <!-- ──── SECTION: Color System ──── -->
-          <div>
-            <p class="section-title">Color System</p>
-            <div class="card">
-              <div class="card__body">
-                <div class="row row--sm row--wrap">
-                  <div class="color-swatch" style="background:#F7F6F3; border:1px solid #D5D3CE; width:64px; height:64px; border-radius:6px; display:flex; align-items:flex-end; padding:4px;">
-                    <span class="text-xs">BG</span>
-                  </div>
-                  <div class="color-swatch" style="background:#111111; width:64px; height:64px; border-radius:6px; display:flex; align-items:flex-end; padding:4px;">
-                    <span class="text-xs" style="color:#F7F6F3;">Text</span>
-                  </div>
-                  <div class="color-swatch" style="background:#8B0000; width:64px; height:64px; border-radius:6px; display:flex; align-items:flex-end; padding:4px;">
-                    <span class="text-xs" style="color:#FFFFFF;">Accent</span>
-                  </div>
-                  <div class="color-swatch" style="background:#4A7C59; width:64px; height:64px; border-radius:6px; display:flex; align-items:flex-end; padding:4px;">
-                    <span class="text-xs" style="color:#FFFFFF;">Success</span>
-                  </div>
-                  <div class="color-swatch" style="background:#B8860B; width:64px; height:64px; border-radius:6px; display:flex; align-items:flex-end; padding:4px;">
-                    <span class="text-xs" style="color:#FFFFFF;">Warning</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ──── SECTION: Spacing Scale ──── -->
-          <div>
-            <p class="section-title">Spacing Scale</p>
-            <div class="card">
-              <div class="card__body stack stack--sm">
-                <div class="row row--sm" style="align-items:flex-end;">
-                  <div style="width:8px; height:8px; background:var(--color-accent); border-radius:2px;"></div>
-                  <span class="text-sm text-muted">8px — xs</span>
-                </div>
-                <div class="row row--sm" style="align-items:flex-end;">
-                  <div style="width:16px; height:16px; background:var(--color-accent); border-radius:2px;"></div>
-                  <span class="text-sm text-muted">16px — sm</span>
-                </div>
-                <div class="row row--sm" style="align-items:flex-end;">
-                  <div style="width:24px; height:24px; background:var(--color-accent); border-radius:2px;"></div>
-                  <span class="text-sm text-muted">24px — md</span>
-                </div>
-                <div class="row row--sm" style="align-items:flex-end;">
-                  <div style="width:40px; height:40px; background:var(--color-accent); border-radius:2px;"></div>
-                  <span class="text-sm text-muted">40px — lg</span>
-                </div>
-                <div class="row row--sm" style="align-items:flex-end;">
-                  <div style="width:64px; height:64px; background:var(--color-accent); border-radius:2px;"></div>
-                  <span class="text-sm text-muted">64px — xl</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ──── SECTION: Error State ──── -->
-          <div>
-            <p class="section-title">Error State</p>
-            <div class="state-message state-message--error">
-              <div class="state-message__icon">⚠</div>
-              <div class="state-message__title">Build failed at step 3</div>
-              <div class="state-message__body">The deployment target could not be reached. This usually happens when the environment variable <code>DEPLOY_URL</code> is missing. Add it to your <code>.env</code> file and retry the build.</div>
-              <div class="state-message__action">
-                <button class="btn btn-secondary btn-sm">Retry Build</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- ──── SECTION: Empty State ──── -->
-          <div>
-            <p class="section-title">Empty State</p>
-            <div class="state-message state-message--empty">
-              <div class="state-message__icon">📋</div>
-              <div class="state-message__title">No builds yet</div>
-              <div class="state-message__body">Start your first build to see results here. It only takes a moment.</div>
-              <div class="state-message__action">
-                <button class="btn btn-primary btn-sm">Create First Build</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- SECONDARY PANEL (30%) -->
-      <aside class="side-panel">
-        <div class="stack stack--md">
-
-          <!-- Step Explanation -->
-          <div>
-            <p class="section-title">Current Step</p>
-            <h4>Review Design System</h4>
-            <p class="text-sm text-muted" style="margin-top:var(--space-xs);">Examine every component, token, and layout region. Confirm visual coherence and consistency before proceeding to implementation.</p>
-          </div>
-
-          <hr class="divider" />
-
-          <!-- Prompt Box -->
-          <div>
-            <p class="section-title">Prompt</p>
-            <div class="prompt-box">
-              <span id="promptText">Create a responsive dashboard using the KodNest design system with a sidebar navigation</span>
-              <button class="btn btn-ghost btn-sm prompt-box__copy" id="copyPromptBtn" aria-label="Copy prompt to clipboard">Copy</button>
-            </div>
-          </div>
-
-          <hr class="divider" />
-
-          <!-- Action Buttons -->
-          <div>
-            <p class="section-title">Actions</p>
-            <div class="stack stack--xs">
-              <button class="btn btn-primary" style="width:100%;" id="buildBtn">Build in Lovable</button>
-              <div class="row row--xs">
-                <button class="btn btn-ghost btn-sm" style="flex:1;" id="workedBtn">It Worked</button>
-                <button class="btn btn-ghost btn-sm" style="flex:1;" id="errorBtn">Error</button>
-              </div>
-              <button class="btn btn-secondary btn-sm" style="width:100%;">Add Screenshot</button>
-            </div>
-          </div>
-
-          <hr class="divider" />
-
-          <!-- Status Cycle -->
-          <div>
-            <p class="section-title">Project Status</p>
-            <p class="text-sm text-muted" style="margin-bottom:var(--space-xs);">Click to cycle through statuses:</p>
-            <button class="btn btn-ghost btn-sm" id="cycleStatusBtn">Cycle Status</button>
-          </div>
-
-        </div>
-      </aside>
+      <!-- 404 — Not Found -->
+      <section class="route-page route-page--not-found" id="route-not-found" data-route-page="not-found">
+        <div class="not-found__icon">&#128683;</div>
+        <h1>Page Not Found</h1>
+        <p class="subtext">The route you requested doesn&rsquo;t exist. Choose a section from the navigation above.</p>
+        <a href="#/dashboard" class="btn btn-primary" style="margin-top: var(--space-md);">Back to Dashboard</a>
+      </section>
 
     </main>
-
-    <!-- ============================================ -->
-    <!-- PROOF FOOTER                                 -->
-    <!-- ============================================ -->
-    <footer class="proof-footer">
-      <div class="proof-footer__inner">
-        <span class="proof-footer__title">Proof</span>
-
-        <label class="proof-item" id="proof-ui">
-          <input type="checkbox" />
-          <span>UI Built</span>
-        </label>
-
-        <label class="proof-item" id="proof-logic">
-          <input type="checkbox" />
-          <span>Logic Working</span>
-        </label>
-
-        <label class="proof-item" id="proof-test">
-          <input type="checkbox" />
-          <span>Test Passed</span>
-        </label>
-
-        <label class="proof-item" id="proof-deploy">
-          <input type="checkbox" />
-          <span>Deployed</span>
-        </label>
-      </div>
-    </footer>
 
   </div>
 
@@ -306,4 +100,5 @@
   <!-- App Logic -->
   <script src="app.js"></script>
 </body>
+
 </html>

@@ -1,7 +1,7 @@
 /* ============================================================
-   KodNest Premium Build System — App Logic
+   Job Notification Tracker — App Logic
    ============================================================
-   Minimal vanilla JS for interactive behaviors.
+   Hash-based SPA router + hamburger menu toggle.
    No frameworks. No libraries. Just intent.
    ============================================================ */
 
@@ -9,123 +9,138 @@
   'use strict';
 
   // ── DOM References ──
-  const statusBadge    = document.getElementById('statusBadge');
-  const stepIndicator  = document.getElementById('stepIndicator');
-  const cycleStatusBtn = document.getElementById('cycleStatusBtn');
-  const copyPromptBtn  = document.getElementById('copyPromptBtn');
-  const promptText     = document.getElementById('promptText');
-  const workedBtn      = document.getElementById('workedBtn');
-  const errorBtn       = document.getElementById('errorBtn');
-  const toastEl        = document.getElementById('toast');
-  const proofItems     = document.querySelectorAll('.proof-item');
+  var navLinks = document.querySelectorAll('.nav-link');
+  var routePages = document.querySelectorAll('.route-page');
+  var hamburgerBtn = document.getElementById('hamburgerBtn');
+  var hamburgerIcon = document.getElementById('hamburgerIcon');
+  var navBar = document.getElementById('navBar');
+  var toastEl = document.getElementById('toast');
 
-  // ── Status Cycle ──
-  const statuses = [
-    { label: 'Not Started', className: 'badge--idle' },
-    { label: 'In Progress', className: 'badge--active' },
-    { label: 'Shipped',     className: 'badge--shipped' }
-  ];
-
-  let currentStatusIndex = 0;
-  let currentStep = 1;
-  const totalSteps = 4;
-
-  function setStatus(index) {
-    const status = statuses[index];
-    statusBadge.textContent = status.label;
-    statusBadge.className = 'badge ' + status.className;
-  }
-
-  if (cycleStatusBtn) {
-    cycleStatusBtn.addEventListener('click', function () {
-      currentStatusIndex = (currentStatusIndex + 1) % statuses.length;
-      setStatus(currentStatusIndex);
-      showToast('Status: ' + statuses[currentStatusIndex].label);
-    });
-  }
+  // ── Valid routes ──
+  var validRoutes = ['dashboard', 'saved', 'digest', 'settings', 'proof'];
+  var defaultRoute = 'dashboard';
+  var currentRoute = null; // Track active route to prevent double-nav flicker
 
 
-  // ── Step Progress ──
-  function updateStep(step) {
-    if (step < 1) step = 1;
-    if (step > totalSteps) step = totalSteps;
-    currentStep = step;
-    stepIndicator.textContent = 'Step ' + currentStep + ' / ' + totalSteps;
-  }
-
-
-  // ── Copy Prompt ──
-  if (copyPromptBtn && promptText) {
-    copyPromptBtn.addEventListener('click', function () {
-      var text = promptText.textContent;
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () {
-          showToast('Prompt copied to clipboard');
-        });
-      } else {
-        // Fallback for older browsers
-        var textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        showToast('Prompt copied to clipboard');
-      }
-    });
-  }
-
-
-  // ── Action Buttons ──
-  if (workedBtn) {
-    workedBtn.addEventListener('click', function () {
-      showToast('Marked as working');
-      // Advance step
-      updateStep(currentStep + 1);
-      // Set status to In Progress if not already
-      if (currentStatusIndex === 0) {
-        currentStatusIndex = 1;
-        setStatus(currentStatusIndex);
-      }
-    });
-  }
-
-  if (errorBtn) {
-    errorBtn.addEventListener('click', function () {
-      showToast('Error reported — review the build log');
-    });
-  }
-
-
-  // ── Proof Checkboxes ──
-  proofItems.forEach(function (item) {
-    var checkbox = item.querySelector('input[type="checkbox"]');
-    if (checkbox) {
-      checkbox.addEventListener('change', function () {
-        if (checkbox.checked) {
-          item.classList.add('is-checked');
-        } else {
-          item.classList.remove('is-checked');
-        }
-        checkAllProof();
-      });
+  // ── Router ──
+  function getRouteFromHash() {
+    var hash = window.location.hash.replace('#/', '').replace('#', '');
+    if (!hash || hash === '/' || hash === '') {
+      return defaultRoute;
     }
+    // Return the hash as-is — validation happens in handleHashChange
+    return hash;
+  }
+
+  function navigateTo(route) {
+    // Skip if already on this route — prevents fadeIn flicker on double-click
+    if (route === currentRoute) {
+      closeHamburger();
+      return;
+    }
+    currentRoute = route;
+
+    // Hide all route pages
+    routePages.forEach(function (page) {
+      page.classList.remove('is-active');
+    });
+
+    // Deactivate all nav links
+    navLinks.forEach(function (link) {
+      link.classList.remove('is-active');
+    });
+
+    // Show the target route page
+    var targetPage = document.querySelector('[data-route-page="' + route + '"]');
+    if (targetPage) {
+      targetPage.classList.add('is-active');
+    }
+
+    // Activate the matching nav link
+    var targetLink = document.querySelector('.nav-link[data-route="' + route + '"]');
+    if (targetLink) {
+      targetLink.classList.add('is-active');
+    }
+
+    // Close hamburger menu if open
+    closeHamburger();
+  }
+
+  function handleHashChange() {
+    var route = getRouteFromHash();
+
+    // If hash is empty or root, redirect to default route
+    if (!window.location.hash || window.location.hash === '#/' || window.location.hash === '#') {
+      window.location.hash = '#/' + defaultRoute;
+      return; // The hashchange event will fire again with the correct hash
+    }
+
+    // Invalid route → show 404 page
+    if (validRoutes.indexOf(route) === -1) {
+      navigateTo('not-found');
+      return;
+    }
+
+    navigateTo(route);
+  }
+
+  // Listen for hash changes
+  window.addEventListener('hashchange', handleHashChange);
+
+
+  // ── Nav Link Clicks ──
+  navLinks.forEach(function (link) {
+    link.addEventListener('click', function (e) {
+      // Let the browser update the hash naturally via href
+      // The hashchange listener will handle the rest
+    });
   });
 
-  function checkAllProof() {
-    var allChecked = true;
-    proofItems.forEach(function (item) {
-      var cb = item.querySelector('input[type="checkbox"]');
-      if (cb && !cb.checked) allChecked = false;
-    });
-    if (allChecked && proofItems.length > 0) {
-      currentStatusIndex = 2;
-      setStatus(currentStatusIndex);
-      showToast('All proof items verified — Shipped');
+
+  // ── Hamburger Menu ──
+  function closeHamburger() {
+    if (navBar) {
+      navBar.classList.remove('is-open');
+    }
+    if (hamburgerBtn) {
+      hamburgerBtn.setAttribute('aria-expanded', 'false');
+    }
+    if (hamburgerIcon) {
+      hamburgerIcon.innerHTML = '&#9776;'; // ☰
     }
   }
+
+  function openHamburger() {
+    if (navBar) {
+      navBar.classList.add('is-open');
+    }
+    if (hamburgerBtn) {
+      hamburgerBtn.setAttribute('aria-expanded', 'true');
+    }
+    if (hamburgerIcon) {
+      hamburgerIcon.innerHTML = '&#10005;'; // ✕
+    }
+  }
+
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', function () {
+      var isOpen = navBar.classList.contains('is-open');
+      if (isOpen) {
+        closeHamburger();
+      } else {
+        openHamburger();
+      }
+    });
+  }
+
+  // Close hamburger when clicking outside
+  document.addEventListener('click', function (e) {
+    if (navBar && navBar.classList.contains('is-open')) {
+      if (!navBar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
+        closeHamburger();
+      }
+    }
+  });
 
 
   // ── Toast ──
@@ -140,5 +155,9 @@
       toastEl.classList.remove('is-visible');
     }, 2200);
   }
+
+
+  // ── Initialize ──
+  handleHashChange();
 
 })();
