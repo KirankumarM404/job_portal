@@ -17,9 +17,9 @@
   var toastEl = document.getElementById('toast');
 
   // ── Valid routes ──
-  var validRoutes = ['dashboard', 'saved', 'digest', 'settings', 'proof'];
-  var defaultRoute = 'dashboard';
-  var currentRoute = null; // Track active route to prevent double-nav flicker
+  var validRoutes = ['landing', 'dashboard', 'saved', 'digest', 'settings', 'proof'];
+  var defaultRoute = 'landing';
+  var currentRoute = null;  // Prevent double-nav flicker
 
 
   // ── Router ──
@@ -28,12 +28,11 @@
     if (!hash || hash === '/' || hash === '') {
       return defaultRoute;
     }
-    // Return the hash as-is — validation happens in handleHashChange
     return hash;
   }
 
   function navigateTo(route) {
-    // Skip if already on this route — prevents fadeIn flicker on double-click
+    // Skip if already on this route
     if (route === currentRoute) {
       closeHamburger();
       return;
@@ -64,18 +63,21 @@
 
     // Close hamburger menu if open
     closeHamburger();
+
+    // Scroll to top on route change
+    window.scrollTo(0, 0);
   }
 
   function handleHashChange() {
     var route = getRouteFromHash();
 
-    // If hash is empty or root, redirect to default route
+    // Empty / root hash → show landing page
     if (!window.location.hash || window.location.hash === '#/' || window.location.hash === '#') {
-      window.location.hash = '#/' + defaultRoute;
-      return; // The hashchange event will fire again with the correct hash
+      navigateTo(defaultRoute);
+      return;
     }
 
-    // Invalid route → show 404 page
+    // Invalid route → 404
     if (validRoutes.indexOf(route) === -1) {
       navigateTo('not-found');
       return;
@@ -84,17 +86,7 @@
     navigateTo(route);
   }
 
-  // Listen for hash changes
   window.addEventListener('hashchange', handleHashChange);
-
-
-  // ── Nav Link Clicks ──
-  navLinks.forEach(function (link) {
-    link.addEventListener('click', function (e) {
-      // Let the browser update the hash naturally via href
-      // The hashchange listener will handle the rest
-    });
-  });
 
 
   // ── Hamburger Menu ──
@@ -106,7 +98,7 @@
       hamburgerBtn.setAttribute('aria-expanded', 'false');
     }
     if (hamburgerIcon) {
-      hamburgerIcon.innerHTML = '&#9776;'; // ☰
+      hamburgerIcon.innerHTML = '&#9776;';
     }
   }
 
@@ -118,14 +110,13 @@
       hamburgerBtn.setAttribute('aria-expanded', 'true');
     }
     if (hamburgerIcon) {
-      hamburgerIcon.innerHTML = '&#10005;'; // ✕
+      hamburgerIcon.innerHTML = '&#10005;';
     }
   }
 
   if (hamburgerBtn) {
     hamburgerBtn.addEventListener('click', function () {
-      var isOpen = navBar.classList.contains('is-open');
-      if (isOpen) {
+      if (navBar.classList.contains('is-open')) {
         closeHamburger();
       } else {
         openHamburger();
@@ -133,7 +124,7 @@
     });
   }
 
-  // Close hamburger when clicking outside
+  // Close hamburger on outside click
   document.addEventListener('click', function (e) {
     if (navBar && navBar.classList.contains('is-open')) {
       if (!navBar.contains(e.target) && !hamburgerBtn.contains(e.target)) {
@@ -141,6 +132,16 @@
       }
     }
   });
+
+
+  // ── Settings Form — Toast Feedback ──
+  var savePrefsBtn = document.getElementById('savePrefsBtn');
+  if (savePrefsBtn) {
+    savePrefsBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      showToast('Preferences noted — logic will be added in the next step.');
+    });
+  }
 
 
   // ── Toast ──
@@ -153,7 +154,7 @@
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(function () {
       toastEl.classList.remove('is-visible');
-    }, 2200);
+    }, 2800);
   }
 
 
