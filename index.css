@@ -1842,3 +1842,182 @@ textarea.input {
   border-radius: var(--radius-lg);
   padding: var(--space-md);
 }
+/* ============================================================
+   26. TEST CHECKLIST
+   ============================================================ */
+.test-panel {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.test-header {
+    background: white;
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    margin-bottom: var(--space-md);
+    text-align: center;
+}
+
+.test-score-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    margin-bottom: var(--space-xs);
+    color: var(--color-text);
+}
+
+.test-progress-track {
+    height: 8px;
+    background: var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: var(--space-md) 0;
+}
+
+.test-progress-fill {
+    height: 100%;
+    background: var(--color-success);
+    transition: width 0.4s ease;
+}
+
+.test-status-message {
+    font-weight: 500;
+    margin-bottom: var(--space-md);
+    font-size: var(--text-sm);
+}
+
+.checklist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.checklist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    padding: 12px var(--space-md);
+    border-radius: var(--radius);
+    border: 1px solid var(--color-border);
+    transition: all var(--transition-fast);
+}
+
+.checklist-item:hover {
+    border-color: var(--color-accent);
+}
+
+.checklist-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    flex: 1;
+    user-select: none;
+}
+
+.checklist-label input {
+    display: none;
+}
+
+.checklist-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    position: relative;
+    transition: all var(--transition-fast);
+}
+
+.checklist-label input:checked~.checklist-custom {
+    background: var(--color-success);
+    border-color: var(--color-success);
+}
+
+.checklist-label input:checked~.checklist-custom::after {
+    content: "";
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checklist-text {
+    font-size: var(--text-base);
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.checklist-tip {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--color-bg);
+    color: var(--color-muted);
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: help;
+    transition: all var(--transition-fast);
+}
+
+.checklist-tip:hover {
+    background: var(--color-accent);
+    color: white;
+}
+
+/* ============================================================
+   27. SHIP LOCK SCREEN
+   ============================================================ */
+.ship-lock-screen {
+    text-align: center;
+    max-width: 480px;
+    margin: var(--space-xl) auto;
+    padding: var(--space-xl) var(--space-md);
+}
+
+.lock-icon {
+    color: var(--color-muted);
+    margin-bottom: var(--space-md);
+}
+
+.success-icon {
+    color: var(--color-success);
+    margin-bottom: var(--space-md);
+}
+
+.ship-lock-screen h2 {
+    font-family: var(--font-heading);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+}
+
+.ship-success-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 60vh;
+}
+
+.ship-success-screen h2 {
+    font-family: var(--font-heading);
+    font-size: var(--text-3xl);
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    color: var(--color-text);
+}
+
+.ship-actions {
+    margin-top: var(--space-lg);
+}

@@ -82,6 +82,8 @@
     "saved",
     "digest",
     "settings",
+    "test",
+    "ship",
     "proof",
   ];
   var defaultRoute = "landing";
@@ -89,7 +91,9 @@
   var SAVED_KEY = "jnt_saved_jobs";
   var PREFS_KEY = "jobTrackerPreferences";
   var STATUS_KEY = "jobTrackerStatus";
+  var STATUS_KEY = "jobTrackerStatus";
   var STATUS_UPDATES_KEY = "jobTrackerStatusUpdates";
+  var TEST_KEY = "jobTrackerTestChecklist";
 
   // Status constants
   var JOB_STATUSES = ["Not Applied", "Applied", "Rejected", "Selected"];
@@ -144,7 +148,10 @@
     if (route === "dashboard") renderDashboard();
     if (route === "saved") renderSavedPage();
     if (route === "digest") renderDigestPage();
+    if (route === "digest") renderDigestPage();
     if (route === "settings") prefillSettingsForm();
+    if (route === "test") renderTestPage();
+    if (route === "ship") renderShipPage();
   }
 
   function handleHashChange() {
@@ -1447,11 +1454,11 @@
       lines.push(i + 1 + ". " + item.title + " — " + item.company);
       lines.push(
         "   " +
-          item.location +
-          " | " +
-          item.experience +
-          " | Score: " +
-          item.matchScore,
+        item.location +
+        " | " +
+        item.experience +
+        " | Score: " +
+        item.matchScore,
       );
       lines.push("   Apply: " + item.applyUrl);
       lines.push("");
@@ -1565,6 +1572,170 @@
       var body = encodeURIComponent(text);
       window.location.href = "mailto:?subject=" + subject + "&body=" + body;
     });
+  }
+
+  // ============================================================
+  //  TEST CHECKLIST
+  // ============================================================
+
+  var checklistItems = [
+    {
+      id: "prefs",
+      text: "Preferences persist after refresh",
+      tip: "Reload page, check settings.",
+    },
+    {
+      id: "score",
+      text: "Match score calculates correctly",
+      tip: "Check green/amber badges match criteria.",
+    },
+    {
+      id: "toggle",
+      text: '"Show only matches" toggle works',
+      tip: "Toggle on: low scores should disappear.",
+    },
+    {
+      id: "save",
+      text: "Save job persists after refresh",
+      tip: "Save a job, reload, check Saved tab.",
+    },
+    {
+      id: "apply",
+      text: "Apply opens in new tab",
+      tip: "Click Apply, matching URL should open.",
+    },
+    {
+      id: "status",
+      text: "Status update persists after refresh",
+      tip: "Change status, verify badge.",
+    },
+    {
+      id: "filter",
+      text: "Status filter works correctly",
+      tip: 'Filter by "Applied" → see only applied.',
+    },
+    {
+      id: "digest",
+      text: "Digest generates top 10 by score",
+      tip: "Generate digest, count items.",
+    },
+    {
+      id: "digest_p",
+      text: "Digest persists for the day",
+      tip: "Refresh, digest should remain.",
+    },
+    {
+      id: "console",
+      text: "No console errors on main pages",
+      tip: "F12 → Console → Navigate routes.",
+    },
+  ];
+
+  function getChecklistState() {
+    try {
+      var json = localStorage.getItem(TEST_KEY);
+      return json ? JSON.parse(json) : {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function toggleCheckitem(id) {
+    var state = getChecklistState();
+    state[id] = !state[id];
+    localStorage.setItem(TEST_KEY, JSON.stringify(state));
+    renderTestPage(); // Re-render to update progress
+  }
+
+  function resetTestStatus() {
+    localStorage.removeItem(TEST_KEY);
+    renderTestPage();
+    showToast("Test status reset.");
+  }
+
+  function renderTestPage() {
+    var container = document.getElementById("checklistContainer");
+    var scoreDisplay = document.getElementById("testScoreDisplay");
+    var progressFill = document.getElementById("testProgressFill");
+    var statusMsg = document.getElementById("testStatusMessage");
+    var resetBtn = document.getElementById("resetTestBtn");
+
+    if (!container) return;
+
+    // Bind Reset Button (once)
+    if (resetBtn && !resetBtn.hasAttribute("data-bound")) {
+      resetBtn.addEventListener("click", resetTestStatus);
+      resetBtn.setAttribute("data-bound", "true");
+    }
+
+    var state = getChecklistState();
+    var passedCount = 0;
+    var html = "";
+
+    checklistItems.forEach(function (item) {
+      var isChecked = !!state[item.id];
+      if (isChecked) passedCount++;
+
+      html += '<div class="checklist-item">';
+      html += '  <label class="checklist-label">';
+      html +=
+        '    <input type="checkbox" onchange="window.toggleCheckitem(\'' +
+        item.id +
+        "')\" " +
+        (isChecked ? "checked" : "") +
+        ">";
+      html += '    <span class="checklist-custom"></span>';
+      html += '    <span class="checklist-text">' + item.text + "</span>";
+      html += "  </label>";
+      html +=
+        '  <span class="checklist-tip" title="' + item.tip + '">?</span>';
+      html += "</div>";
+    });
+
+    container.innerHTML = html;
+
+    // Update Summary
+    if (scoreDisplay)
+      scoreDisplay.textContent =
+        "Tests Passed: " + passedCount + " / " + checklistItems.length;
+
+    var pct = (passedCount / checklistItems.length) * 100;
+    if (progressFill) progressFill.style.width = pct + "%";
+
+    if (statusMsg) {
+      if (passedCount === checklistItems.length) {
+        statusMsg.textContent = "All systems go. Ready for launch.";
+        statusMsg.style.color = "var(--color-success)";
+      } else {
+        statusMsg.textContent = "Resolve all issues before shipping.";
+        statusMsg.style.color = "var(--color-warning)";
+      }
+    }
+  }
+
+  // Expose toggle function globally for inline onchange
+  window.toggleCheckitem = toggleCheckitem;
+
+  // ============================================================
+  //  SHIP PAGE
+  // ============================================================
+
+  function renderShipPage() {
+    var lockScreen = document.getElementById("shipLockScreen");
+    var successScreen = document.getElementById("shipSuccessScreen");
+
+    var state = getChecklistState();
+    var allPassed = checklistItems.every(function (item) {
+      return !!state[item.id];
+    });
+
+    if (allPassed) {
+      if (lockScreen) lockScreen.style.display = "none";
+      if (successScreen) successScreen.style.display = "flex";
+    } else {
+      if (lockScreen) lockScreen.style.display = "flex";
+      if (successScreen) successScreen.style.display = "none";
+    }
   }
 
   // ============================================================
