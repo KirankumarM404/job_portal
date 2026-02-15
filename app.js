@@ -30,6 +30,17 @@
   var savedEmpty = document.getElementById('savedEmpty');
   var clearSavedBtn = document.getElementById('clearSavedBtn');
 
+  // Digest
+  var digestNoPrefs = document.getElementById('digestNoPrefs');
+  var digestGenerate = document.getElementById('digestGenerate');
+  var digestCard = document.getElementById('digestCard');
+  var digestBody = document.getElementById('digestBody');
+  var digestDate = document.getElementById('digestDate');
+  var digestNoMatches = document.getElementById('digestNoMatches');
+  var generateDigestBtn = document.getElementById('generateDigestBtn');
+  var copyDigestBtn = document.getElementById('copyDigestBtn');
+  var emailDigestBtn = document.getElementById('emailDigestBtn');
+
   // Filters
   var filterKeyword = document.getElementById('filterKeyword');
   var filterLocation = document.getElementById('filterLocation');
@@ -106,6 +117,7 @@
     // Render content for specific routes
     if (route === 'dashboard') renderDashboard();
     if (route === 'saved') renderSavedPage();
+    if (route === 'digest') renderDigestPage();
     if (route === 'settings') prefillSettingsForm();
   }
 
@@ -941,6 +953,221 @@
   if (minMatchScoreSlider && sliderValueDisplay) {
     minMatchScoreSlider.addEventListener('input', function () {
       sliderValueDisplay.textContent = this.value;
+    });
+  }
+
+
+  // ============================================================
+  //  DIGEST ENGINE
+  // ============================================================
+
+  var DIGEST_PREFIX = 'jobTrackerDigest_';
+
+  function todayKey() {
+    var d = new Date();
+    var yyyy = d.getFullYear();
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    var dd = String(d.getDate()).padStart(2, '0');
+    return DIGEST_PREFIX + yyyy + '-' + mm + '-' + dd;
+  }
+
+  function todayLabel() {
+    var d = new Date();
+    var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    return d.toLocaleDateString('en-IN', options);
+  }
+
+  function getStoredDigest() {
+    try {
+      var data = JSON.parse(localStorage.getItem(todayKey()));
+      return Array.isArray(data) ? data : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function storeDigest(digestJobs) {
+    localStorage.setItem(todayKey(), JSON.stringify(digestJobs));
+  }
+
+  /**
+   * Generate digest: top 10 jobs sorted by matchScore desc, then postedDaysAgo asc.
+   */
+  function generateDigest() {
+    rebuildScoreCache();
+    var prefs = getPreferences();
+    if (!prefs) return [];
+
+    // Score all jobs and create scored copies
+    var scored = [];
+    for (var i = 0; i < JOB_DATA.length; i++) {
+      var job = JOB_DATA[i];
+      var score = (typeof scoreCache[job.id] === 'number') ? scoreCache[job.id] : 0;
+      scored.push({ job: job, score: score });
+    }
+
+    // Sort: matchScore desc, then postedDaysAgo asc
+    scored.sort(function (a, b) {
+      if (b.score !== a.score) return b.score - a.score;
+      return a.job.postedDaysAgo - b.job.postedDaysAgo;
+    });
+
+    // Filter out zero-score jobs (no match at all)
+    scored = scored.filter(function (item) { return item.score > 0; });
+
+    // Take top 10
+    var top10 = scored.slice(0, 10);
+
+    // Convert to storable format
+    var digestData = top10.map(function (item) {
+      return {
+        id: item.job.id,
+        title: item.job.title,
+        company: item.job.company,
+        location: item.job.location,
+        experience: item.job.experience,
+        matchScore: item.score,
+        applyUrl: item.job.applyUrl
+      };
+    });
+
+    return digestData;
+  }
+
+  /**
+   * Render the digest page based on current state.
+   */
+  function renderDigestPage() {
+    // Hide all digest sections first
+    if (digestNoPrefs) digestNoPrefs.style.display = 'none';
+    if (digestGenerate) digestGenerate.style.display = 'none';
+    if (digestCard) digestCard.style.display = 'none';
+    if (digestNoMatches) digestNoMatches.style.display = 'none';
+
+    // No preferences → blocking state
+    if (!hasPreferences()) {
+      if (digestNoPrefs) digestNoPrefs.style.display = 'flex';
+      return;
+    }
+
+    // Check if digest already exists for today
+    var existing = getStoredDigest();
+    if (existing) {
+      renderDigestCard(existing);
+      return;
+    }
+
+    // Show generate button
+    if (digestGenerate) digestGenerate.style.display = 'block';
+  }
+
+  /**
+   * Render the email-style digest card.
+   */
+  function renderDigestCard(digestData) {
+    if (!digestData || digestData.length === 0) {
+      if (digestNoMatches) digestNoMatches.style.display = 'flex';
+      return;
+    }
+
+    // Date
+    if (digestDate) digestDate.textContent = todayLabel();
+
+    // Build rows
+    var html = '';
+    for (var i = 0; i < digestData.length; i++) {
+      var item = digestData[i];
+      var tier = scoreTier(item.matchScore);
+      html += '<div class="digest-row">';
+      html += '  <span class="digest-row__rank">' + (i + 1) + '</span>';
+      html += '  <div class="digest-row__info">';
+      html += '    <div class="digest-row__title">' + escapeHtml(item.title) + '</div>';
+      html += '    <div class="digest-row__meta">' + escapeHtml(item.company) + ' · ' + escapeHtml(item.location) + ' · ' + escapeHtml(item.experience) + '</div>';
+      html += '  </div>';
+      html += '  <div class="digest-row__actions">';
+      html += '    <span class="score-badge score-badge--' + tier + '">' + item.matchScore + '</span>';
+      html += '    <a href="' + escapeHtml(item.applyUrl) + '" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">Apply</a>';
+      html += '  </div>';
+      html += '</div>';
+    }
+    if (digestBody) digestBody.innerHTML = html;
+
+    // Show card, hide generate button
+    if (digestGenerate) digestGenerate.style.display = 'none';
+    if (digestCard) digestCard.style.display = 'block';
+  }
+
+  /**
+   * Build plain-text version of digest for copy/email.
+   */
+  function digestToPlainText(digestData) {
+    var lines = [];
+    lines.push('Top 10 Jobs For You — 9AM Digest');
+    lines.push(todayLabel());
+    lines.push('─────────────────────────────────');
+    lines.push('');
+
+    for (var i = 0; i < digestData.length; i++) {
+      var item = digestData[i];
+      lines.push((i + 1) + '. ' + item.title + ' — ' + item.company);
+      lines.push('   ' + item.location + ' | ' + item.experience + ' | Score: ' + item.matchScore);
+      lines.push('   Apply: ' + item.applyUrl);
+      lines.push('');
+    }
+
+    lines.push('─────────────────────────────────');
+    lines.push('Generated by Job Notification Tracker');
+    return lines.join('\n');
+  }
+
+  // Generate Digest Button
+  if (generateDigestBtn) {
+    generateDigestBtn.addEventListener('click', function () {
+      var digestData = generateDigest();
+      if (digestData.length === 0) {
+        if (digestGenerate) digestGenerate.style.display = 'none';
+        if (digestNoMatches) digestNoMatches.style.display = 'flex';
+        showToast('No matching roles found for today\'s digest.');
+        return;
+      }
+      storeDigest(digestData);
+      renderDigestCard(digestData);
+      showToast('Digest generated — top ' + digestData.length + ' matches.');
+    });
+  }
+
+  // Copy Digest to Clipboard
+  if (copyDigestBtn) {
+    copyDigestBtn.addEventListener('click', function () {
+      var digestData = getStoredDigest();
+      if (!digestData) return;
+      var text = digestToPlainText(digestData);
+      navigator.clipboard.writeText(text).then(function () {
+        showToast('Digest copied to clipboard.');
+      }).catch(function () {
+        // Fallback for older browsers
+        var ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.left = '-9999px';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+        showToast('Digest copied to clipboard.');
+      });
+    });
+  }
+
+  // Create Email Draft
+  if (emailDigestBtn) {
+    emailDigestBtn.addEventListener('click', function () {
+      var digestData = getStoredDigest();
+      if (!digestData) return;
+      var text = digestToPlainText(digestData);
+      var subject = encodeURIComponent('My 9AM Job Digest');
+      var body = encodeURIComponent(text);
+      window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
     });
   }
 

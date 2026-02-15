@@ -1568,3 +1568,146 @@ textarea.input {
   color: var(--color-accent);
   font-weight: 500;
 }
+
+
+/* ============================================================
+   25. DIGEST — Email-Style Layout
+   ============================================================ */
+.digest-generate {
+  text-align: center;
+  padding: var(--space-lg) 0;
+}
+
+.digest-generate .btn {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--text-base);
+  padding: 14px 28px;
+}
+
+.digest-sim-note {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  margin-top: var(--space-sm);
+  font-style: italic;
+}
+
+.digest-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+  margin-top: var(--space-sm);
+}
+
+.digest-card__header {
+  padding: var(--space-md) var(--space-md) var(--space-sm);
+  border-bottom: 3px solid var(--color-accent);
+}
+
+.digest-card__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.digest-card__date {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-muted);
+  margin-top: 4px;
+}
+
+.digest-card__body {
+  padding: 0;
+}
+
+.digest-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  transition: background var(--transition-fast);
+}
+
+.digest-row:last-child {
+  border-bottom: none;
+}
+
+.digest-row:hover {
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.digest-row__rank {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: 700;
+  color: var(--color-muted);
+  min-width: 20px;
+  text-align: center;
+}
+
+.digest-row__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.digest-row__title {
+  font-family: var(--font-heading);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.digest-row__meta {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.digest-row__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.digest-card__footer {
+  padding: var(--space-sm) var(--space-md);
+  background: var(--color-bg-alt);
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  text-align: center;
+  border-top: 1px solid var(--color-border);
+}
+
+.digest-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md) var(--space-md);
+}
+
+.digest-actions .btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Digest page background */
+[data-route-page="digest"]>.page-shell {
+  background: var(--color-bg-alt);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+}
